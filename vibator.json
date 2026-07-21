@@ -1,0 +1,67 @@
+{
+  "$schema": "./schema.json",
+  "rules": {
+    "no-conflict-markers": "error",
+    "banned-patterns": {
+      "severity": "error",
+      "include": ["**/*.{ts,md,yml,cjs,json}"],
+      "exclude": ["package-lock.json"],
+      "options": {
+        "patterns": [
+          {
+            "pattern": "\\u2014",
+            "message": "Em-dash in text",
+            "expected": "Plain punctuation: comma, colon, semicolon or parentheses (see CONTRIBUTING.md, Style)",
+            "fix": "Rewrite the sentence without the em-dash"
+          }
+        ]
+      }
+    },
+    "max-file-size": {
+      "severity": "error",
+      "options": {
+        "maxKb": 400
+      }
+    },
+    "env-example-sync": "off",
+    "max-lines": {
+      "severity": "error",
+      "include": ["src/**/*.ts"],
+      "exclude": ["**/*.test.ts"],
+      "options": {
+        "max": 400
+      }
+    },
+    "tsdoc-coverage": {
+      "severity": "error",
+      "include": ["src/**/*.ts"],
+      "exclude": ["**/*.test.ts"]
+    },
+    "meaningful-names": {
+      "severity": "error",
+      "include": ["src/**/*.ts"],
+      "exclude": ["**/*.test.ts"]
+    },
+    "prefer-array-methods": {
+      "severity": "error",
+      "include": ["src/**/*.ts"],
+      "exclude": ["**/*.test.ts"]
+    },
+    "no-deprecated-apis": {
+      "severity": "error",
+      "include": ["src/**/*.ts"],
+      "exclude": ["**/*.test.ts"],
+      "options": {
+        "projects": ["tsconfig.json"]
+      }
+    }
+  },
+  "guidelines": {
+    "CLAUDE.md": [
+      "max-lines",
+      "meaningful-names",
+      "prefer-array-methods",
+      "tsdoc-coverage"
+    ]
+  }
+}

@@ -1,0 +1,1615 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "plugins": {
+      "description": "Paths or package names of modules contributing rules",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rules": {
+      "type": "object",
+      "properties": {
+        "no-conflict-markers": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "error",
+                "warn",
+                "off"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "error",
+                    "warn",
+                    "off"
+                  ]
+                },
+                "include": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "exclude": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "options": {
+                  "type": "object",
+                  "properties": {}
+                },
+                "docs": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "error",
+                      "warn",
+                      "off"
+                    ]
+                  },
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {}
+                  },
+                  "docs": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "No unresolved merge conflict markers"
+        },
+        "max-file-size": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "error",
+                "warn",
+                "off"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "error",
+                    "warn",
+                    "off"
+                  ]
+                },
+                "include": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "exclude": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "options": {
+                  "type": "object",
+                  "properties": {
+                    "maxKb": {
+                      "default": 400,
+                      "description": "Largest accepted file, in kilobytes",
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                "docs": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "error",
+                      "warn",
+                      "off"
+                    ]
+                  },
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "maxKb": {
+                        "default": 400,
+                        "description": "Largest accepted file, in kilobytes",
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  },
+                  "docs": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "No oversized files in version control"
+        },
+        "max-lines": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "error",
+                "warn",
+                "off"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "error",
+                    "warn",
+                    "off"
+                  ]
+                },
+                "include": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "exclude": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "options": {
+                  "type": "object",
+                  "properties": {
+                    "max": {
+                      "default": 400,
+                      "description": "Longest a file may be, in lines",
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                "docs": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "error",
+                      "warn",
+                      "off"
+                    ]
+                  },
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "max": {
+                        "default": 400,
+                        "description": "Longest a file may be, in lines",
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  },
+                  "docs": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "No source file longer than the budget"
+        },
+        "banned-patterns": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "error",
+                "warn",
+                "off"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "error",
+                    "warn",
+                    "off"
+                  ]
+                },
+                "include": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "exclude": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "options": {
+                  "type": "object",
+                  "properties": {
+                    "patterns": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "pattern": {
+                            "type": "string",
+                            "description": "JavaScript regular expression source, matched per line"
+                          },
+                          "flags": {
+                            "default": "",
+                            "description": "Regular expression flags, such as i",
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string",
+                            "description": "What is wrong when the pattern matches"
+                          },
+                          "expected": {
+                            "type": "string",
+                            "description": "The standard, positively stated"
+                          },
+                          "fix": {
+                            "type": "string",
+                            "description": "The concrete next action"
+                          }
+                        },
+                        "required": [
+                          "pattern",
+                          "message",
+                          "expected",
+                          "fix"
+                        ]
+                      },
+                      "description": "The patterns to ban, each carrying its own diagnostic text"
+                    },
+                    "ignoreMarkers": {
+                      "default": [
+                        "vibator-ignore"
+                      ],
+                      "description": "Comment markers that opt a line out, each requiring a reason",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "patterns"
+                  ]
+                },
+                "docs": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "error",
+                      "warn",
+                      "off"
+                    ]
+                  },
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "patterns": {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "pattern": {
+                              "type": "string",
+                              "description": "JavaScript regular expression source, matched per line"
+                            },
+                            "flags": {
+                              "default": "",
+                              "description": "Regular expression flags, such as i",
+                              "type": "string"
+                            },
+                            "message": {
+                              "type": "string",
+                              "description": "What is wrong when the pattern matches"
+                            },
+                            "expected": {
+                              "type": "string",
+                              "description": "The standard, positively stated"
+                            },
+                            "fix": {
+                              "type": "string",
+                              "description": "The concrete next action"
+                            }
+                          },
+                          "required": [
+                            "pattern",
+                            "message",
+                            "expected",
+                            "fix"
+                          ]
+                        },
+                        "description": "The patterns to ban, each carrying its own diagnostic text"
+                      },
+                      "ignoreMarkers": {
+                        "default": [
+                          "vibator-ignore"
+                        ],
+                        "description": "Comment markers that opt a line out, each requiring a reason",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "patterns"
+                    ]
+                  },
+                  "docs": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Project-banned patterns stay out of the source"
+        },
+        "no-dead-doc-links": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "error",
+                "warn",
+                "off"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "error",
+                    "warn",
+                    "off"
+                  ]
+                },
+                "include": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "exclude": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "options": {
+                  "type": "object",
+                  "properties": {}
+                },
+                "docs": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "error",
+                      "warn",
+                      "off"
+                    ]
+                  },
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {}
+                  },
+                  "docs": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Relative links in Markdown point at files that exist"
+        },
+        "locale-parity": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "error",
+                "warn",
+                "off"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "error",
+                    "warn",
+                    "off"
+                  ]
+                },
+                "include": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "exclude": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "options": {
+                  "type": "object",
+                  "properties": {
+                    "root": {
+                      "type": "string",
+                      "description": "Directory holding the locale catalogs"
+                    },
+                    "source": {
+                      "default": "en",
+                      "description": "The locale every other is seeded from",
+                      "type": "string"
+                    },
+                    "layout": {
+                      "default": "directory-per-locale",
+                      "description": "directory-per-locale expects root/<locale>/<namespace>.json; file-per-locale expects root/<locale>.json",
+                      "type": "string",
+                      "enum": [
+                        "directory-per-locale",
+                        "file-per-locale"
+                      ]
+                    },
+                    "locales": {
+                      "description": "The locales to check; discovered from the layout when omitted",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "root"
+                  ],
+                  "additionalProperties": false
+                },
+                "docs": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "error",
+                      "warn",
+                      "off"
+                    ]
+                  },
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "root": {
+                        "type": "string",
+                        "description": "Directory holding the locale catalogs"
+                      },
+                      "source": {
+                        "default": "en",
+                        "description": "The locale every other is seeded from",
+                        "type": "string"
+                      },
+                      "layout": {
+                        "default": "directory-per-locale",
+                        "description": "directory-per-locale expects root/<locale>/<namespace>.json; file-per-locale expects root/<locale>.json",
+                        "type": "string",
+                        "enum": [
+                          "directory-per-locale",
+                          "file-per-locale"
+                        ]
+                      },
+                      "locales": {
+                        "description": "The locales to check; discovered from the layout when omitted",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "root"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "docs": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Every locale carries the same keys as the source"
+        },
+        "env-example-sync": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "error",
+                "warn",
+                "off"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "error",
+                    "warn",
+                    "off"
+                  ]
+                },
+                "include": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "exclude": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "options": {
+                  "type": "object",
+                  "properties": {
+                    "example": {
+                      "default": ".env.example",
+                      "description": "The file documenting every configurable variable",
+                      "type": "string"
+                    },
+                    "ambient": {
+                      "default": [
+                        "NODE_ENV",
+                        "CI",
+                        "PATH",
+                        "HOME",
+                        "PROD",
+                        "DEV",
+                        "MODE",
+                        "SSR",
+                        "BASE_URL"
+                      ],
+                      "description": "Variables the runtime, bundler or CI supplies, never documented",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "externallyConsumed": {
+                      "default": [],
+                      "description": "Variables consumed outside the scanned sources, e.g. by compose",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "reportUnread": {
+                      "default": true,
+                      "description": "Whether to report documented variables that nothing reads",
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "docs": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "error",
+                      "warn",
+                      "off"
+                    ]
+                  },
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "example": {
+                        "default": ".env.example",
+                        "description": "The file documenting every configurable variable",
+                        "type": "string"
+                      },
+                      "ambient": {
+                        "default": [
+                          "NODE_ENV",
+                          "CI",
+                          "PATH",
+                          "HOME",
+                          "PROD",
+                          "DEV",
+                          "MODE",
+                          "SSR",
+                          "BASE_URL"
+                        ],
+                        "description": "Variables the runtime, bundler or CI supplies, never documented",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "externallyConsumed": {
+                        "default": [],
+                        "description": "Variables consumed outside the scanned sources, e.g. by compose",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "reportUnread": {
+                        "default": true,
+                        "description": "Whether to report documented variables that nothing reads",
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  "docs": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "The example env file matches what the code reads"
+        },
+        "tsdoc-coverage": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "error",
+                "warn",
+                "off"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "error",
+                    "warn",
+                    "off"
+                  ]
+                },
+                "include": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "exclude": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "options": {
+                  "type": "object",
+                  "properties": {
+                    "requireOn": {
+                      "default": "all",
+                      "description": "Which declarations must carry documentation",
+                      "type": "string",
+                      "enum": [
+                        "all",
+                        "exported"
+                      ]
+                    },
+                    "requireParams": {
+                      "default": true,
+                      "description": "Whether every parameter needs a @param tag",
+                      "type": "boolean"
+                    },
+                    "requireReturns": {
+                      "default": true,
+                      "description": "Whether value-returning signatures need a @returns tag",
+                      "type": "boolean"
+                    },
+                    "maxInlineCommentLines": {
+                      "default": 2,
+                      "description": "Longest run of consecutive own-line // comments allowed",
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                "docs": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "error",
+                      "warn",
+                      "off"
+                    ]
+                  },
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "requireOn": {
+                        "default": "all",
+                        "description": "Which declarations must carry documentation",
+                        "type": "string",
+                        "enum": [
+                          "all",
+                          "exported"
+                        ]
+                      },
+                      "requireParams": {
+                        "default": true,
+                        "description": "Whether every parameter needs a @param tag",
+                        "type": "boolean"
+                      },
+                      "requireReturns": {
+                        "default": true,
+                        "description": "Whether value-returning signatures need a @returns tag",
+                        "type": "boolean"
+                      },
+                      "maxInlineCommentLines": {
+                        "default": 2,
+                        "description": "Longest run of consecutive own-line // comments allowed",
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  },
+                  "docs": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Every declaration carries a complete TSDoc contract"
+        },
+        "meaningful-names": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "error",
+                "warn",
+                "off"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "error",
+                    "warn",
+                    "off"
+                  ]
+                },
+                "include": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "exclude": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "options": {
+                  "type": "object",
+                  "properties": {
+                    "ignoreMarkers": {
+                      "default": [
+                        "vibator-ignore"
+                      ],
+                      "description": "comment markers that opt a line out, each requiring a reason",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "minLength": {
+                      "default": 3,
+                      "description": "Identifiers shorter than this must be allowlisted",
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "allow": {
+                      "default": [
+                        "id",
+                        "ip",
+                        "ok",
+                        "db",
+                        "on",
+                        "to",
+                        "up",
+                        "x",
+                        "y",
+                        "z"
+                      ],
+                      "description": "Short names that carry meaning, or that a library imposes",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "deny": {
+                      "default": [
+                        "data",
+                        "temp",
+                        "tmp",
+                        "arr",
+                        "obj",
+                        "val",
+                        "err",
+                        "res",
+                        "req",
+                        "evt",
+                        "idx",
+                        "num",
+                        "str",
+                        "buf",
+                        "elem",
+                        "btn",
+                        "msg",
+                        "env",
+                        "ret",
+                        "ctx",
+                        "cfg",
+                        "opts",
+                        "info",
+                        "misc",
+                        "stuff",
+                        "foo",
+                        "bar",
+                        "baz"
+                      ],
+                      "description": "Names long enough to pass the bar but still meaningless",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "docs": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "error",
+                      "warn",
+                      "off"
+                    ]
+                  },
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "ignoreMarkers": {
+                        "default": [
+                          "vibator-ignore"
+                        ],
+                        "description": "comment markers that opt a line out, each requiring a reason",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "minLength": {
+                        "default": 3,
+                        "description": "Identifiers shorter than this must be allowlisted",
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "allow": {
+                        "default": [
+                          "id",
+                          "ip",
+                          "ok",
+                          "db",
+                          "on",
+                          "to",
+                          "up",
+                          "x",
+                          "y",
+                          "z"
+                        ],
+                        "description": "Short names that carry meaning, or that a library imposes",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "deny": {
+                        "default": [
+                          "data",
+                          "temp",
+                          "tmp",
+                          "arr",
+                          "obj",
+                          "val",
+                          "err",
+                          "res",
+                          "req",
+                          "evt",
+                          "idx",
+                          "num",
+                          "str",
+                          "buf",
+                          "elem",
+                          "btn",
+                          "msg",
+                          "env",
+                          "ret",
+                          "ctx",
+                          "cfg",
+                          "opts",
+                          "info",
+                          "misc",
+                          "stuff",
+                          "foo",
+                          "bar",
+                          "baz"
+                        ],
+                        "description": "Names long enough to pass the bar but still meaningless",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "docs": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Identifiers we declare carry meaning"
+        },
+        "prefer-array-methods": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "error",
+                "warn",
+                "off"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "error",
+                    "warn",
+                    "off"
+                  ]
+                },
+                "include": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "exclude": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "options": {
+                  "type": "object",
+                  "properties": {
+                    "ignoreMarkers": {
+                      "default": [
+                        "vibator-ignore"
+                      ],
+                      "description": "comment markers that opt a line out, each requiring a reason",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "docs": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "error",
+                      "warn",
+                      "off"
+                    ]
+                  },
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "ignoreMarkers": {
+                        "default": [
+                          "vibator-ignore"
+                        ],
+                        "description": "comment markers that opt a line out, each requiring a reason",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "docs": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Array methods over single-statement loops"
+        },
+        "no-deprecated-apis": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "error",
+                "warn",
+                "off"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "error",
+                    "warn",
+                    "off"
+                  ]
+                },
+                "include": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "exclude": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "options": {
+                  "type": "object",
+                  "properties": {
+                    "projects": {
+                      "default": [
+                        "tsconfig.json"
+                      ],
+                      "description": "tsconfig paths whose programs this rule resolves against",
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "docs": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "error",
+                      "warn",
+                      "off"
+                    ]
+                  },
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "projects": {
+                        "default": [
+                          "tsconfig.json"
+                        ],
+                        "description": "tsconfig paths whose programs this rule resolves against",
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "docs": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "No use of APIs marked @deprecated"
+        },
+        "codegen-drift": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "error",
+                "warn",
+                "off"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "error",
+                    "warn",
+                    "off"
+                  ]
+                },
+                "include": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "exclude": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "options": {
+                  "type": "object",
+                  "properties": {
+                    "generators": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Human-readable name, used in messages"
+                          },
+                          "command": {
+                            "type": "string",
+                            "description": "Shell command that regenerates the output"
+                          },
+                          "cwd": {
+                            "default": ".",
+                            "description": "Working directory, relative to the project root",
+                            "type": "string"
+                          },
+                          "paths": {
+                            "minItems": 1,
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "Paths the generator writes, relative to the project root"
+                          },
+                          "timeoutMs": {
+                            "default": 180000,
+                            "description": "How long to allow before treating the run as stuck, ms",
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "command",
+                          "paths"
+                        ]
+                      },
+                      "description": "Generators to run, each with the paths it owns"
+                    }
+                  },
+                  "required": [
+                    "generators"
+                  ]
+                },
+                "docs": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "error",
+                      "warn",
+                      "off"
+                    ]
+                  },
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "generators": {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "Human-readable name, used in messages"
+                            },
+                            "command": {
+                              "type": "string",
+                              "description": "Shell command that regenerates the output"
+                            },
+                            "cwd": {
+                              "default": ".",
+                              "description": "Working directory, relative to the project root",
+                              "type": "string"
+                            },
+                            "paths": {
+                              "minItems": 1,
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Paths the generator writes, relative to the project root"
+                            },
+                            "timeoutMs": {
+                              "default": 180000,
+                              "description": "How long to allow before treating the run as stuck, ms",
+                              "type": "integer",
+                              "exclusiveMinimum": 0,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "command",
+                            "paths"
+                          ]
+                        },
+                        "description": "Generators to run, each with the paths it owns"
+                      }
+                    },
+                    "required": [
+                      "generators"
+                    ]
+                  },
+                  "docs": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Generated files match the source they derive from"
+        }
+      }
+    },
+    "guidelines": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

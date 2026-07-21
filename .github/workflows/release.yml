@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Install dependencies
+        env:
+          CI: true
+          HUSKY: "0"
+        run: npm ci
+
+      - name: Build the package that will be published
+        run: npm run build
+
+      - name: Verify the gates one last time
+        run: |
+          npm run lint
+          npm run arch
+          npm run knip
+          npm run test
+          node dist/cli.js
+
+      - name: Semantic Release (tag + GitHub Release + npm publish via OIDC)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: npx --yes semantic-release@24

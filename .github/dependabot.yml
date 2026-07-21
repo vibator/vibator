@@ -1,0 +1,34 @@
+version: 2
+updates:
+  # --- GitHub Actions ---
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      action-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # --- NPM ---
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      node-dependencies:
+        patterns: [ "*" ]
+        update-types: [ "minor", "patch" ]
+    ignore:
+      # @types/node majors track the Node major (.nvmrc); bump it only when
+      # the supported runtime floor moves.
+      - dependency-name: "@types/node"
+        update-types: [ "version-update:semver-major" ]
+      # TypeScript 7 (the native compiler) drops the JS compiler API the AST
+      # rules are built on. Staying on 6.x until the rules are ported; the
+      # peer range in package.json is capped to match.
+      - dependency-name: "typescript"
+        update-types: [ "version-update:semver-major" ]
