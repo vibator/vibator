@@ -1,0 +1,27 @@
+version: 2
+updates:
+  # --- GitHub Actions ---
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      action-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # --- NPM ---
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      node-dependencies:
+        patterns: [ "*" ]
+        update-types: [ "minor", "patch" ]
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: [ "version-update:semver-major" ]
