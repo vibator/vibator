@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 import { execFileSync } from "node:child_process";
-import { globSync } from "node:fs";
+import { readdirSync } from "node:fs";
 import { join, matchesGlob, relative } from "node:path";
 
 /** Directories never worth walking, whatever a rule's globs say. */
@@ -56,20 +56,46 @@ function gitUniverse(root: string): string[] | undefined {
   }
 }
 
+/** Directory names the filesystem walk never descends into. */
+const SKIPPED_DIRECTORIES = new Set([
+  "node_modules",
+  "dist",
+  "build",
+  "coverage",
+  ".git",
+]);
+
 /**
  * Every file under the root, when git cannot answer.
  *
+ * @remarks A plain directory walk rather than `fs.globSync`, because glob
+ * traversal skips dot-directories and would hide `.github` and its likes
+ * from every rule.
  * @param root - Absolute project root.
  * @returns Repo-relative paths of regular files.
  */
 function globUniverse(root: string): string[] {
-  return globSync("**/*", {
-    cwd: root,
-    exclude: ALWAYS_EXCLUDED,
-    withFileTypes: true,
-  })
-    .filter((entry) => entry.isFile())
-    .map((entry) => relative(root, join(entry.parentPath, entry.name)));
+  const found: string[] = [];
+  walkDirectory(root, root, found);
+  return found;
+}
+
+/**
+ * Collects the regular files under one directory, recursively.
+ *
+ * @param root - Absolute project root, for relative paths.
+ * @param directory - The directory being read.
+ * @param found - Sink for the paths collected so far.
+ */
+function walkDirectory(root: string, directory: string, found: string[]): void {
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const absolute = join(directory, entry.name);
+    if (entry.isDirectory() && !SKIPPED_DIRECTORIES.has(entry.name)) {
+      walkDirectory(root, absolute, found);
+    } else if (entry.isFile()) {
+      found.push(relative(root, absolute));
+    }
+  }
 }
 
 /**
@@ -183,8 +209,31 @@ export function discover(
 
   const kept = universe
     .map((path) => path.replaceAll("\\", "/"))
-    .filter((path) => include.some((pattern) => matchesGlob(path, pattern)))
-    .filter((path) => !excludes.some((pattern) => matchesGlob(path, pattern)));
+    .filter((path) => include.some((pattern) => globMatches(path, pattern)))
+    .filter((path) => !excludes.some((pattern) => globMatches(path, pattern)));
 
   return [...new Set(kept)].sort((left, right) => left.localeCompare(right));
+}
+
+/**
+ * Whether a path matches a glob, dot-directories included.
+ *
+ * @remarks Glob convention keeps `**` from crossing segments that start with
+ * a dot, so `**\/*.md` would silently skip `.github/pull_request_template.md`
+ * and a conflict marker in a workflow file would never be found. The path is also
+ * matched with the leading dots stripped from its segments, so hidden
+ * directories are covered while explicit patterns like `.github/**` still
+ * work on the original path.
+ *
+ * @param path - The repo-relative path.
+ * @param pattern - The glob pattern.
+ * @returns `true` when either form of the path matches.
+ */
+function globMatches(path: string, pattern: string): boolean {
+  if (matchesGlob(path, pattern)) return true;
+  const undotted = path
+    .split("/")
+    .map((segment) => (segment.startsWith(".") ? segment.slice(1) : segment))
+    .join("/");
+  return undotted !== path && matchesGlob(undotted, pattern);
 }

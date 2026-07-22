@@ -52,6 +52,22 @@ describe("discover", () => {
       "src/z.ts",
     ]);
   });
+
+  it("finds files inside dot-directories", () => {
+    // Glob convention keeps ** from crossing dot-segments; a conflict marker
+    // in a workflow file must still be found.
+    const root = projectWith([".github/workflows/ci.yml", ".github/notes.md"]);
+    expect(discover(root, ["**/*"], [])).toContain(".github/workflows/ci.yml");
+    expect(discover(root, ["**/*.md"], [])).toContain(".github/notes.md");
+  });
+
+  it("still honours explicit dot-directory patterns and excludes", () => {
+    const root = projectWith([".github/notes.md", "docs/notes.md"]);
+    expect(discover(root, [".github/**"], [])).toEqual([".github/notes.md"]);
+    expect(discover(root, ["**/*.md"], [".github/**"])).toEqual([
+      "docs/notes.md",
+    ]);
+  });
 });
 
 describe("changedFiles", () => {

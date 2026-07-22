@@ -20,7 +20,7 @@ import { BUILT_IN_RULES } from "./rules/index.ts";
 /**
  * Silences Node's experimental-feature notices.
  *
- * @remarks File discovery uses `fs.globSync`, which Node still marks
+ * @remarks File discovery uses `path.matchesGlob`, which Node still marks
  * experimental. The notice is about Node's API surface, not about anything the
  * user did, and printing it on every run trains people to ignore our output.
  */
