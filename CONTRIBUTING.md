@@ -21,7 +21,7 @@ npm run verify    # everything CI runs: lint, arch, knip, build, test, dogfood
 | `npm run knip`     | knip                         | Dead code, unused exports and dependencies            |
 | `npm run build`    | tsc + generators             | Type errors, stale `schema.json` or rule catalog      |
 | `npm run test`     | vitest                       | Unit tests, with coverage                             |
-| `node dist/cli.js` | vibator itself               | The repository's own rules, on its own source         |
+| `npm run vibator`  | vibator itself               | The repository's own rules, on its own source         |
 
 Requirements: Node 22 or later (see `.nvmrc`). Any package manager works,
 but CI and the lockfile use npm. TypeScript source runs directly through
