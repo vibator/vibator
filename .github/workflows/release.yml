@@ -12,16 +12,27 @@ jobs:
       pull-requests: write
       id-token: write
     steps:
+      - name: Mint the release bot token
+        id: bot-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
       - name: Checkout
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
           persist-credentials: true
+          token: ${{ steps.bot-token.outputs.token }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version-file: ".nvmrc"
+
+      - name: Update npm (trusted publishing needs npm 11.5.1 or later)
+        run: npm install -g npm@^11.5.1
 
       - name: Install dependencies
         env:
@@ -40,7 +51,9 @@ jobs:
           npm run test
           node dist/cli.js
 
-      - name: Semantic Release (tag + GitHub Release + npm publish via OIDC)
+      - name: Semantic Release (version commit + tag + Release + npm via OIDC)
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: npx --yes semantic-release@24
+          GITHUB_TOKEN: ${{ steps.bot-token.outputs.token }}
+        run: >-
+          npx --yes -p semantic-release@24 -p @semantic-release/git@10
+          semantic-release
