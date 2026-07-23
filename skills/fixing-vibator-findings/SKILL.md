@@ -33,7 +33,10 @@ background.
 3. **Apply the `fix`.** When it is not enough, read the guideline at
    `docs[0].absolutePath` (or `npx vibator explain <rule>`). It states why
    the rule exists and what correct code looks like, including the
-   exception policy.
+   exception policy. That path may point outside the repository, into a
+   shared preset the config extends. Read it; never edit it. A file under
+   `node_modules` is replaced on the next install, so a change there fixes
+   nothing and hides the standard from everyone else.
 4. **Re-run** the same command until clean. Exit code 0 with no errors is
    done. Warnings do not block, but treat them the same way in code you
    touched.
@@ -42,7 +45,9 @@ background.
 
 - **Never edit `vibator.json` to make a run pass.** No severity downgrades,
   no new excludes, no `off`. The config is the project's standard; changing
-  the standard is a human decision, not a fix.
+  the standard is a human decision, not a fix. This covers any config it
+  extends: a preset is a standard several projects share, so editing one to
+  quieten this repository is the same mistake made larger.
 - **Do not restate `message` as a code comment** or otherwise annotate the
   violation. Fix it.
 - **Do not blanket-ignore.** The escape hatch exists for the case where the

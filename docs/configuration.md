@@ -51,6 +51,69 @@ schema instead:
 
 ---
 
+## `extends`
+
+Configs this one builds on, so a shared preset can carry the standards and
+each project states only what differs.
+
+```json
+{
+  "extends": ["@acme/quality/vibator.json"],
+  "rules": { "max-lines": "warn" }
+}
+```
+
+An entry is either a path starting with `.`, or a package specifier resolved
+through that package's `exports`. Both resolve against the file that declares
+them, so a preset that extends another preset works. Later entries win over
+earlier ones, and the file's own settings win over all of them. A config that
+extends itself, directly or through a chain, is an error rather than a hang.
+
+### How settings combine
+
+A child's fields win one at a time, and unset fields inherit. Arrays replace
+rather than concatenate. This is what Biome does, verified against 2.5.5, and
+it matches the rule `include` and `exclude` already follow.
+
+The practical consequence is that a bare severity keeps everything else:
+
+```json
+// the preset
+"max-lines": { "options": { "max": 400 }, "include": ["src/**/*.ts"] }
+
+// your config
+"max-lines": "warn"
+
+// in force: warn severity, still 400 lines, still src/**/*.ts
+```
+
+Arrays replacing is what lets a project remove something a preset allowed. If
+arrays merged, an inherited entry could never be dropped without abandoning
+the preset entirely.
+
+Two exceptions. The multi-block array form replaces wholesale on either side,
+because there is no meaningful way to pair up two lists of blocks. And `root`
+and `$schema` are never inherited, since both describe the file they appear
+in.
+
+### Paths inside a preset
+
+`docs` paths and `guidelines` document keys resolve against the config that
+states them, not against your project root. A preset can therefore ship the
+prose explaining its standards, and findings in your repository point at it
+with a working absolute path:
+
+```json
+// @acme/quality/vibator.json
+"max-lines": { "docs": "guides/file-length.md" }
+```
+
+resolves to `node_modules/@acme/quality/guides/file-length.md`, and the JSON
+reporter reports that as the `absolutePath` an agent can open. Paths in your
+own config keep resolving against your project root, as before.
+
+---
+
 ## `rules`
 
 Keyed by rule id. The value is a severity string, a settings block, or an

@@ -262,7 +262,8 @@ preference, and preferences belong in a formatter.
 }
 ```
 
-`plugins` accepts repo-relative paths or package names. TypeScript files
+`plugins` accepts repo-relative paths or package names, scoped names
+included, so a rule pack can ship as `@acme/vibator-rules`. TypeScript files
 work directly on Node 22.18+, which strips types natively.
 
 A module may export one rule or an array of them:

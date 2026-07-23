@@ -65,6 +65,8 @@ function invalidPlugin(specifier: string): Error {
  * @remarks A relative or absolute path is resolved against the project root and
  * converted to a file URL, so plugins living in the repository work without
  * being installed. Anything else is left alone and resolved as a package name.
+ * A scoped name is a package despite containing a slash, so a preset can ship
+ * its rules as `@acme/vibator-rules` and be extended by name.
  * @param root - Absolute project root.
  * @param specifier - The plugin as written in config.
  * @returns The specifier to import.
@@ -73,7 +75,7 @@ function resolveSpecifier(root: string, specifier: string): string {
   const isPath =
     specifier.startsWith(".") ||
     isAbsolute(specifier) ||
-    specifier.includes("/");
+    (specifier.includes("/") && !specifier.startsWith("@"));
   if (!isPath) return specifier;
   return pathToFileURL(resolve(root, specifier)).href;
 }

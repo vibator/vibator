@@ -49,7 +49,8 @@ Configured by `vibator.json` at the project root. See
 
 ```
 src/
-  core/        engine, config, discovery, context, plugins, diagnostics
+  core/        engine, config (+ extends), discovery, context, plugins,
+               diagnostics
   reporters/   pretty (TTY, progress) and json
   rules/       one file per built-in rule
   cli.ts       command line entry point

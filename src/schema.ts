@@ -34,6 +34,31 @@ function ruleEntrySchema(ruleId: string): z.ZodType {
 }
 
 /**
+ * Builds the schema for the config file as a whole.
+ *
+ * @param rules - Entry schemas keyed by rule id.
+ * @returns The schema describing every field `vibator.json` accepts.
+ */
+function configFileSchema(rules: Record<string, z.ZodType>): z.ZodType {
+  return z.object({
+    $schema: z.string().optional(),
+    extends: z
+      .union([z.string(), z.array(z.string())])
+      .optional()
+      .describe(
+        "Configs this one builds on: a path starting with . or a package specifier. " +
+          "Later entries win; this file wins over all of them.",
+      ),
+    plugins: z
+      .array(z.string())
+      .optional()
+      .describe("Paths or package names of modules contributing rules"),
+    rules: z.object(rules).partial().optional(),
+    guidelines: z.record(z.string(), z.array(z.string())).optional(),
+  });
+}
+
+/**
  * Writes the schema next to the package manifest.
  *
  * @returns Nothing; writes `schema.json`.
@@ -46,19 +71,9 @@ function main(): void {
     ]),
   );
 
-  const configSchema = z.object({
-    $schema: z.string().optional(),
-    plugins: z
-      .array(z.string())
-      .optional()
-      .describe("Paths or package names of modules contributing rules"),
-    rules: z.object(rules).partial().optional(),
-    guidelines: z.record(z.string(), z.array(z.string())).optional(),
-  });
-
   writeFileSync(
     new URL("../schema.json", import.meta.url),
-    `${JSON.stringify(z.toJSONSchema(configSchema, { io: "input" }), null, 2)}\n`,
+    `${JSON.stringify(z.toJSONSchema(configFileSchema(rules), { io: "input" }), null, 2)}\n`,
   );
   console.log(`Wrote schema.json for ${BUILT_IN_RULES.length} rules.`);
 }
