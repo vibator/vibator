@@ -147,8 +147,8 @@ must not match. For line-based rules, use `hasLineIgnoreAbove` from the
 
 ## Common mistakes
 
-- Scanning comments. If matching source text, strip comments first, or prose
-  documenting the pattern will report as a violation.
+- Scanning comments. If matching source text, strip comments first, or
+  documentation that mentions the pattern is reported as a violation.
 - Globbing without excluding tests, `.d.ts` or generated directories.
 - Expecting `include` and `exclude` in config to merge with the defaults.
   They replace them.

@@ -184,9 +184,9 @@ an expression has. It costs seconds rather than milliseconds.
 Two pitfalls, both found while building the built-in `no-deprecated-apis`:
 
 - A symbol merges the documentation of every overload. Asking whether
-  `querySelectorAll` is deprecated answers yes, on the strength of a
-  deprecated overload nobody called. Resolve the signature at the call site
-  instead (`checker.getResolvedSignature`).
+  `querySelectorAll` is deprecated answers yes, because one overload nobody
+  called is deprecated. Resolve the signature at the call site instead
+  (`checker.getResolvedSignature`).
 - An object literal key resolves to the literal's own property, which
   carries no documentation. The declaration lives on the type the literal is
   assigned to; reach it through `checker.getContextualType`.
@@ -223,8 +223,8 @@ comment leaders, reason required), so plugins do not need their own variant.
 
 ## The guideline
 
-Every rule ships a Markdown document explaining the standard. It is what
-`vibator explain <rule>` prints and what each finding points at.
+Every rule ships a Markdown document explaining the standard.
+`vibator explain <rule>` prints it, and each finding points at it.
 
 Put it next to your rules and name it in `docs`:
 
@@ -273,8 +273,7 @@ export default [ruleOne, ruleTwo];
 ```
 
 Rule ids must be unique across built-ins and plugins. A collision is an
-error, not a silent override; otherwise the config would mean different
-things depending on load order.
+error, not a silent override.
 
 If your rules live in their own directory inside a repo that is not itself
 an ES module, add a `package.json` there with `{"type": "module"}`.
@@ -303,8 +302,8 @@ expect(found).toHaveLength(1);
 expect(found[0].line).toBe(1);
 ```
 
-Test the boundary, not just the hit: the case that should pass is where
-false positives get caught. For every rule, cover at least
+Test the boundary, not just the hit: the case that should pass is the one
+that catches false positives. For every rule, cover at least
 
 - a clear violation,
 - a clear non-violation,
@@ -338,7 +337,7 @@ Consumers then write `"plugins": ["vibator-rules-acme"]`.
 Before writing one, check it clears these bars:
 
 - **Deterministic.** Same input, same finding. No clock, no network, no
-  randomness. A check that flickers gets disabled.
+  randomness. A check that changes its answer between runs gets disabled.
 - **Actionable.** You can state the fix in one line. If you cannot, the
   problem is a design discussion, not a lint rule.
 - **Low false positives.** A noisy rule gets switched off, and its true

@@ -63,19 +63,21 @@ each project states only what differs.
 }
 ```
 
-An entry is either a path starting with `.`, or a package specifier resolved
-through that package's `exports`. Both resolve against the file that declares
-them, so a preset that extends another preset works. Later entries win over
-earlier ones, and the file's own settings win over all of them. A config that
-extends itself, directly or through a chain, is an error rather than a hang.
+An entry is a path starting with `.`, or a package specifier resolved
+through that package's `exports`.
+
+- Entries resolve against the file that declares them, so a preset can
+  extend another preset.
+- Later entries win over earlier ones. The file's own settings win over all
+  of them.
+- A config that extends itself, directly or through a chain, is an error.
 
 ### How settings combine
 
-A child's fields win one at a time, and unset fields inherit. Arrays replace
-rather than concatenate. This is what Biome does, verified against 2.5.5, and
-it matches the rule `include` and `exclude` already follow.
+- A child's fields win one at a time. Unset fields inherit.
+- Arrays replace, they do not concatenate. Biome merges the same way.
 
-The practical consequence is that a bare severity keeps everything else:
+In practice, a bare severity keeps everything else:
 
 ```json
 // the preset
@@ -87,21 +89,20 @@ The practical consequence is that a bare severity keeps everything else:
 // in force: warn severity, still 400 lines, still src/**/*.ts
 ```
 
-Arrays replacing is what lets a project remove something a preset allowed. If
-arrays merged, an inherited entry could never be dropped without abandoning
-the preset entirely.
+Arrays replace so a project can remove an entry a preset allowed.
 
-Two exceptions. The multi-block array form replaces wholesale on either side,
-because there is no meaningful way to pair up two lists of blocks. And `root`
-and `$schema` are never inherited, since both describe the file they appear
-in.
+Two exceptions:
+
+- The multi-block array form replaces wholesale on either side.
+- `root` and `$schema` are never inherited; both describe the file they
+  appear in.
 
 ### Paths inside a preset
 
 `docs` paths and `guidelines` document keys resolve against the config that
-states them, not against your project root. A preset can therefore ship the
-prose explaining its standards, and findings in your repository point at it
-with a working absolute path:
+states them, not against your project root. A preset can ship the documents
+explaining its standards, and findings in your repository point at them with
+a working absolute path:
 
 ```json
 // @acme/quality/vibator.json
@@ -110,7 +111,7 @@ with a working absolute path:
 
 resolves to `node_modules/@acme/quality/guides/file-length.md`, and the JSON
 reporter reports that as the `absolutePath` an agent can open. Paths in your
-own config keep resolving against your project root, as before.
+own config resolve against your project root.
 
 ---
 
@@ -141,11 +142,10 @@ Every rule's defaults and every option it accepts are listed in the
 [rule catalog](./rule-catalog.md), also available as `vibator docs rules`.
 The catalog is generated from the rules' own schemas on each build.
 
-An unknown rule id is an error rather than being ignored, so a typo cannot
-silently disable a check.
+An unknown rule id is an error, so a typo cannot silently disable a check.
 
-Rules absent from `rules` still run, at their default severity. Configuring
-nothing enables everything, and switching one rule off is a single line.
+Rules absent from `rules` still run at their default severity, unless
+[`recommended`](#recommended) is `false`.
 
 ### Several instances of one rule
 
@@ -167,10 +167,9 @@ All blocks report under the same rule id.
 `error` fails the run (exit code 1). `warn` reports without failing. `off`
 disables the rule entirely: it is not discovered, not run, and costs nothing.
 
-Rules that can produce false positives on unusual codebases default to
-`warn`. `env-example-sync` matches configuration reads textually, and
-`prefer-array-methods` is syntactic and cannot distinguish an array from a
-`Set`, so both ship as warnings.
+Rules that can produce false positives default to `warn`
+(`env-example-sync` matches text; `prefer-array-methods` cannot tell an
+array from a `Set`).
 
 ### Globs
 
@@ -200,21 +199,22 @@ Whether rules this config never names run at their own default severity.
 }
 ```
 
-This config runs two rules and nothing else. With `recommended` at its
-default of `true`, it would also run every other rule at that rule's default
-severity, which is what makes a fresh install useful with no config at all.
+This config runs two rules and nothing else.
 
-Once `recommended` is `false`, a rule runs only if the config names it. A
-rule listed without a severity runs at its own default, so `"max-lines": {}`
-is enough to enable one. Rules whose default severity is `off` are
-unaffected either way; they never run unconfigured.
+- With `recommended: true` (the default), unnamed rules also run, each at
+  its own default severity. That keeps a fresh install useful with no
+  config at all.
+- Once `recommended` is `false`, a rule runs only if the config names it.
+  A rule listed without a severity runs at its own default, so
+  `"max-lines": {}` is enough to enable one.
+- Rules whose default severity is `off` are unaffected either way; they
+  never run unconfigured.
+- Under `extends`, the nearest config wins. A preset can set it `false`
+  and hand down a curated list; a project extending that preset can set it
+  back to `true`.
 
 Set it `false` to state a deliberate selection, not to quiet a failing run:
 it disables every unlisted rule, the passing ones included.
-
-Under `extends`, the nearest config wins, as with any other field. A preset
-can set it `false` and hand down a curated list; a project extending that
-preset can set it back to `true`.
 
 ---
 
@@ -243,13 +243,9 @@ Maps your own documents onto rules, document path to rule ids:
 }
 ```
 
-These are additive: they appear alongside the rule's own guideline under each
-finding. To replace a rule's guideline, use the per-rule `docs` field
-instead.
-
-The two exist for different situations. `docs` states that your standard
-differs from the shipped one. `guidelines` points readers at the place where
-your project commits to the standard the rule already enforces.
+These are additive: they appear alongside the rule's own guideline under
+each finding. To replace a rule's guideline instead, use the per-rule `docs`
+field.
 
 ---
 
@@ -301,10 +297,11 @@ vibator --since origin/main --reporter json
 
 This is also the supported way to adopt vibator on a codebase with existing
 violations: new work is checked immediately, old files are checked when they
-are next touched, and no baseline file is needed. Note that project-scoped
-rules that consult sources of their own (a generator's output, a locale tree)
-still check what they check; the restriction narrows the file list, it does
-not sandbox the rule.
+are next touched, and no baseline file is needed.
+
+Project-scoped rules that read sources of their own (a generator's output, a
+locale tree) are not narrowed: these flags filter the file list, not what a
+rule reads.
 
 ---
 
@@ -351,9 +348,11 @@ For CI, and for agents acting on findings:
 }
 ```
 
-`message`, `expected` and `fix` stay separate so an agent can act on `fix`
-without parsing prose. `docs` lists the guideline in force first, then any
-project documents mapped to the rule, each with an `absolutePath` it can open
-directly, wherever the package manager installed the package. `snippet`
-carries the lines around the finding, so triage costs no extra reads. A rule
-that crashed carries an `error` string instead of diagnostics.
+- `message`, `expected` and `fix` stay separate so an agent can act on
+  `fix` without parsing prose.
+- `docs` lists the guideline in force first, then any project documents
+  mapped to the rule. Each `absolutePath` works wherever the package
+  manager installed the package.
+- `snippet` carries the lines around the finding, so triage costs no extra
+  reads.
+- A rule that crashed carries an `error` string instead of diagnostics.

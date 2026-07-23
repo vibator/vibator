@@ -6,7 +6,7 @@ variable should be one the code reads.
 ## Why it is a rule
 
 The example file is the only description of what a deployment must supply,
-and nothing links it to the code, so it rots in both directions. An
+and nothing links it to the code, so it drifts in both directions. An
 undocumented variable is one a production deployment silently runs without.
 A documented variable nothing reads is one operators keep setting for no
 reason.
@@ -27,6 +27,6 @@ each ALL_CAPS name it binds, renames included.
 ## Limits
 
 Matching is textual, so a name assembled at runtime from a prefix is missed.
-Spelling variable names out in full is what keeps this rule working.
+Writing variable names out in full keeps this rule working.
 Variables consumed outside the scanned sources, by a compose file or a
 container entrypoint, belong in the `externallyConsumed` option.

@@ -2,10 +2,10 @@
   <h1>Vibator</h1>
   <img src="https://raw.githubusercontent.com/vibator/vibator/main/assets/logo.svg" alt="Vibator Logo" width="128" height="128">
 
-  [![Quality](https://github.com/vibator/vibator/actions/workflows/quality.yml/badge.svg)](https://github.com/vibator/vibator/actions/workflows/quality.yml)
-  [![npm version](https://img.shields.io/npm/v/vibator)](https://www.npmjs.com/package/vibator)
-  [![node](https://img.shields.io/node/v/vibator)](https://nodejs.org)
-  [![license: MIT](https://img.shields.io/npm/l/vibator)](./LICENSE)
+[![Quality](https://github.com/vibator/vibator/actions/workflows/quality.yml/badge.svg)](https://github.com/vibator/vibator/actions/workflows/quality.yml)
+[![npm version](https://img.shields.io/npm/v/vibator)](https://www.npmjs.com/package/vibator)
+[![node](https://img.shields.io/node/v/vibator)](https://nodejs.org)
+[![license: MIT](https://img.shields.io/npm/l/vibator)](./LICENSE)
 </div>
 
 Vibator is a quality gate framework for coding agents. It converts prompts
@@ -87,51 +87,66 @@ not fail the run.
   "rules": {
     "no-conflict-markers": "error",
     "max-lines": [
-      { "include": ["src/**/*.{ts,tsx}"], "options": { "max": 400 } },
-      { "include": ["tests/**"], "options": { "max": 800 } }
+      {
+        "include": [
+          "src/**/*.{ts,tsx}"
+        ],
+        "options": {
+          "max": 400
+        }
+      },
+      {
+        "include": [
+          "tests/**"
+        ],
+        "options": {
+          "max": 800
+        }
+      }
     ],
     "env-example-sync": "warn",
     "locale-parity": "off"
   },
   "guidelines": {
-    "docs/code-style.md": ["max-lines", "meaningful-names"]
+    "docs/code-style.md": [
+      "max-lines",
+      "meaningful-names"
+    ]
   }
 }
 ```
 
-Each rule takes `severity` (`error`, `warn` or `off`), `include`, `exclude`
-and its own `options`. A bare string is shorthand for the severity. An array
-of blocks runs the rule once per block, so different areas of a codebase can
-have different budgets. Rules absent from the config still run at their
-default severity, so a fresh install checks something before anyone has
-configured anything. Set `"recommended": false` to run only the rules the
-config names.
-
-`guidelines` maps your own documents onto rules, so a finding points the agent
-at your standards as well as the rule's own guideline.
-
-`extends` builds on a shared config, given as a path or a package specifier,
-so several projects can hold one standard and state only what differs. Fields
-merge one at a time and arrays replace, as in Biome, so a bare severity keeps
-the preset's options. A preset can ship its own guidelines, and findings point
-at them wherever it is installed.
+- Each rule takes `severity` (`error`, `warn` or `off`), `include`,
+  `exclude` and its own `options`. A bare string is shorthand for the
+  severity.
+- An array of blocks runs the rule once per block, so different areas of a
+  codebase can have different budgets.
+- Rules absent from the config still run at their default severity, so a
+  fresh install checks something out of the box. Set `"recommended": false`
+  to run only the rules the config names.
+- `guidelines` maps your own documents onto rules, so a finding points the
+  agent at your standards as well as the rule's own guideline.
+- `extends` builds on a shared config, given as a path or a package
+  specifier. Fields merge one at a time and arrays replace, as in Biome, so
+  a bare severity keeps the preset's options. A preset can ship its own
+  guidelines, and findings point at them wherever it is installed.
 
 ## Rules
 
-| Rule                   | Default | Checks                                          |
-|------------------------|---------|-------------------------------------------------|
-| `no-conflict-markers`  | error   | Committed merge conflict markers                |
-| `max-file-size`        | error   | Oversized files committed by mistake            |
-| `max-lines`            | error   | Files over a line budget                        |
-| `banned-patterns`      | off¹    | Project-specific banned patterns, in plain JSON |
-| `no-dead-doc-links`    | error   | Relative Markdown links that resolve to nothing |
-| `locale-parity`        | off¹    | Locales missing keys the source locale has      |
-| `env-example-sync`²    | warn    | Env vars read but undocumented, and vice versa  |
-| `tsdoc-coverage`²      | error   | Missing or incomplete TSDoc                     |
-| `meaningful-names`²    | error   | Placeholder identifiers (`data`, `res`, `tmp`)  |
-| `prefer-array-methods`²| warn    | Single-statement loops that could be `map`      |
-| `no-deprecated-apis`²  | error   | Calls into `@deprecated` declarations           |
-| `codegen-drift`        | off¹    | Generated files out of date with their source   |
+| Rule                    | Default | Checks                                          |
+|-------------------------|---------|-------------------------------------------------|
+| `no-conflict-markers`   | error   | Committed merge conflict markers                |
+| `max-file-size`         | error   | Oversized files committed by mistake            |
+| `max-lines`             | error   | Files over a line budget                        |
+| `banned-patterns`       | off¹    | Project-specific banned patterns, in plain JSON |
+| `no-dead-doc-links`     | error   | Relative Markdown links that resolve to nothing |
+| `locale-parity`         | off¹    | Locales missing keys the source locale has      |
+| `env-example-sync`²     | warn    | Env vars read but undocumented, and vice versa  |
+| `tsdoc-coverage`²       | error   | Missing or incomplete TSDoc                     |
+| `meaningful-names`²     | error   | Placeholder identifiers (`data`, `res`, `tmp`)  |
+| `prefer-array-methods`² | warn    | Single-statement loops that could be `map`      |
+| `no-deprecated-apis`²   | error   | Calls into `@deprecated` declarations           |
+| `codegen-drift`         | off¹    | Generated files out of date with their source   |
 
 ¹ Off until configured. These rules need project-specific options (patterns
 to ban, a locales directory, generator commands) before they can run.
@@ -172,8 +187,8 @@ with an `id`, a guideline, an options schema, glob defaults, and either
 
 ```ts
 // vibator-rules/no-direct-env-access.ts
-import { defineRule } from "vibator";
-import { z } from "zod";
+import {defineRule} from "vibator";
+import {z} from "zod";
 
 export default defineRule({
   id: "no-direct-env-access",
@@ -183,9 +198,9 @@ export default defineRule({
   defaultSeverity: "error",
   defaultInclude: ["src/**/*.ts"],
   defaultExclude: ["src/config/**"],
-  optionsSchema: z.object({ module: z.string().default("src/config") }),
+  optionsSchema: z.object({module: z.string().default("src/config")}),
 
-  checkFile({ file, bytes, options }) {
+  checkFile({file, bytes, options}) {
     const lines = bytes.toString("utf8").split("\n");
     const index = lines.findIndex((line) => line.includes("process.env"));
     if (index === -1) return [];
@@ -204,8 +219,12 @@ Register it like a built-in:
 
 ```json
 {
-  "plugins": ["./vibator-rules/no-direct-env-access.ts"],
-  "rules": { "no-direct-env-access": "error" }
+  "plugins": [
+    "./vibator-rules/no-direct-env-access.ts"
+  ],
+  "rules": {
+    "no-direct-env-access": "error"
+  }
 }
 ```
 
@@ -229,20 +248,20 @@ npx vibator skills               # list what is bundled
 
 ## Guidelines
 
-Every rule ships a guideline in `docs/rules/`. It is what
-`vibator explain <rule>` prints and what findings point at, so the standard
-reaches the agent at the moment the check fails.
+Every rule ships a guideline in `docs/rules/`. `vibator explain <rule>`
+prints it, and findings point at it, so the standard reaches the agent at
+the moment the check fails.
 
 To replace a rule's guideline with your own document:
 
 ```json
-"max-lines": { "docs": "docs/our-file-length-policy.md" }
+"max-lines": {"docs": "docs/our-file-length-policy.md"}
 ```
 
 To add project context without replacing the shipped guideline:
 
 ```json
-"guidelines": { "docs/code-style.md": ["max-lines", "meaningful-names"] }
+"guidelines": {"docs/code-style.md": ["max-lines", "meaningful-names"]}
 ```
 
 ## Documentation

@@ -29,8 +29,8 @@ the project actually contains. Inspect first, write second, run third.
   state a deliberate selection, and that selection is a human's call.
 - **A config the project extends is not yours to edit.** A preset states a
   standard several projects share. Configure the difference locally, or ask
-  a human to change the preset. Never quieten this repository by editing a
-  file under `node_modules`, which the next install replaces anyway.
+  a human to change the preset. Never silence a finding by editing a file
+  under `node_modules`; the next install replaces it anyway.
 
 ## Steps
 
@@ -85,8 +85,8 @@ the project actually contains. Inspect first, write second, run third.
 6. **Adopt incrementally on a legacy codebase with `--changed`, not by
    weakening.** Check new work immediately (`npx vibator --changed`, or
    `--since origin/main` in CI for the pull request's whole diff) while the
-   backlog is worked down. For rules with many findings, `warn` is the
-   honest interim severity: visible, not blocking. Do not use `off` to mean
+   backlog shrinks. For rules with many findings, use `warn` in the interim:
+   findings stay visible without blocking. Do not use `off` to mean
    "later".
 
 7. **Verify the result.** Run `npx vibator` and confirm: every enabled rule
@@ -108,8 +108,8 @@ the file's own settings win over all of them.
 }
 ```
 
-The merge follows Biome, so the behaviour is what a reader of this stack
-already expects. Two consequences to get right:
+The merge follows Biome, so it behaves as users of that stack expect. Two
+consequences to get right:
 
 - **A bare severity keeps everything else.** Writing `"max-lines": "warn"`
   over a preset that set `max` and `include` changes only the severity; the
@@ -117,7 +117,7 @@ already expects. Two consequences to get right:
   restating them is how a project silently drifts from its preset.
 - **Arrays replace, they do not concatenate.** To add one entry to an
   inherited `allow` or `patterns` list, write the whole list you want. This
-  is deliberate: it is what makes removing an inherited entry possible.
+  is deliberate: it makes removing an inherited entry possible.
 
 Write only the difference. A config that repeats what the preset already
 says is indistinguishable from one that disagrees with it, and the next
@@ -127,9 +127,9 @@ A preset built as a curated selection sets `"recommended": false` and lists
 the rules it wants. Under such a preset, unnamed rules do not run, so check
 for it before concluding a rule is missing.
 
-Guideline paths behave accordingly: `docs` and `guidelines` entries stated
-by a preset resolve against the preset, so findings point at the prose that
-ships with it. Your own paths still resolve against the project root.
+Guideline paths resolve the same way: `docs` and `guidelines` entries stated
+by a preset resolve against the preset, so findings point at the documents
+that ship with it. Your own paths still resolve against the project root.
 
 ## Severity policy
 
