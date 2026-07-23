@@ -10,7 +10,8 @@
 
 Vibator is a quality gate framework for coding agents. It converts prompts
 into deterministic, actionable checks, and declutters the style-check scripts
-that AI-assisted coding leaves behind.
+that AI-assisted coding leaves behind. It targets JavaScript and TypeScript
+projects, though some rules apply to any file their globs select.
 
 ## Why
 
@@ -114,18 +115,21 @@ at your standards as well as the rule's own guideline.
 | `no-conflict-markers`  | error   | Committed merge conflict markers                |
 | `max-file-size`        | error   | Oversized files committed by mistake            |
 | `max-lines`            | error   | Files over a line budget                        |
-| `banned-patterns`      | off*    | Project-specific banned patterns, in plain JSON |
+| `banned-patterns`      | off¹    | Project-specific banned patterns, in plain JSON |
 | `no-dead-doc-links`    | error   | Relative Markdown links that resolve to nothing |
-| `locale-parity`        | off*    | Locales missing keys the source locale has      |
-| `env-example-sync`     | warn    | Env vars read but undocumented, and vice versa  |
-| `tsdoc-coverage`       | error   | Missing or incomplete TSDoc                     |
-| `meaningful-names`     | error   | Placeholder identifiers (`data`, `res`, `tmp`)  |
-| `prefer-array-methods` | warn    | Single-statement loops that could be `map`      |
-| `no-deprecated-apis`   | error   | Calls into `@deprecated` declarations           |
-| `codegen-drift`        | off*    | Generated files out of date with their source   |
+| `locale-parity`        | off¹    | Locales missing keys the source locale has      |
+| `env-example-sync`²    | warn    | Env vars read but undocumented, and vice versa  |
+| `tsdoc-coverage`²      | error   | Missing or incomplete TSDoc                     |
+| `meaningful-names`²    | error   | Placeholder identifiers (`data`, `res`, `tmp`)  |
+| `prefer-array-methods`²| warn    | Single-statement loops that could be `map`      |
+| `no-deprecated-apis`²  | error   | Calls into `@deprecated` declarations           |
+| `codegen-drift`        | off¹    | Generated files out of date with their source   |
 
-\* Off until configured. These rules need project-specific options (patterns
+¹ Off until configured. These rules need project-specific options (patterns
 to ban, a locales directory, generator commands) before they can run.
+
+² Reads JavaScript or TypeScript source. `no-deprecated-apis` also needs a
+`tsconfig.json` and the `typescript` peer dependency.
 
 `vibator explain <rule>` prints the full guideline for any rule.
 
