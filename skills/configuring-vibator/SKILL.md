@@ -24,12 +24,21 @@ the project actually contains. Inspect first, write second, run third.
   every default buries the lines that matter.
 - **`include` and `exclude` replace a rule's defaults.** They do not merge.
   Copy the defaults you still want before narrowing.
+- **A config the project extends is not yours to edit.** A preset states a
+  standard several projects share. Configure the difference locally, or ask
+  a human to change the preset. Never quieten this repository by editing a
+  file under `node_modules`, which the next install replaces anyway.
 
 ## Steps
 
 1. **Start from a valid file.** If no `vibator.json` exists, run
    `npx vibator init`; it writes the `$schema` line that gives editors
    validation. Then `npx vibator list` shows every rule and its default.
+   Before writing rules of your own, check whether the project already
+   extends a preset, or whether one exists to extend (a `@scope/quality`
+   style package in `package.json`, or the same config repeated across
+   sibling repositories). Extending it beats restating it; see
+   "Building on a shared preset" below.
 
 2. **Run once, unconfigured**: `npx vibator --reporter json`. This shows
    which rules pass, which fail, and which crashed for lack of options. Read
@@ -83,6 +92,38 @@ the project actually contains. Inspect first, write second, run third.
    `npx vibator explain <rule>` shows the right guideline for anything you
    overrode.
 
+## Building on a shared preset
+
+`extends` takes a path starting with `.` or a package specifier, resolved
+against the file that declares it. Later entries win over earlier ones, and
+the file's own settings win over all of them.
+
+```json
+{
+  "extends": ["@acme/quality/vibator.json"],
+  "rules": { "max-lines": "warn" }
+}
+```
+
+The merge follows Biome, so the behaviour is what a reader of this stack
+already expects. Two consequences to get right:
+
+- **A bare severity keeps everything else.** Writing `"max-lines": "warn"`
+  over a preset that set `max` and `include` changes only the severity; the
+  budget and globs are inherited. You do not need to restate them, and
+  restating them is how a project silently drifts from its preset.
+- **Arrays replace, they do not concatenate.** To add one entry to an
+  inherited `allow` or `patterns` list, write the whole list you want. This
+  is deliberate: it is what makes removing an inherited entry possible.
+
+Write only the difference. A config that repeats what the preset already
+says is indistinguishable from one that disagrees with it, and the next
+preset update will not reach the fields you copied.
+
+Guideline paths behave accordingly: `docs` and `guidelines` entries stated
+by a preset resolve against the preset, so findings point at the prose that
+ships with it. Your own paths still resolve against the project root.
+
 ## Severity policy
 
 - `error`: deterministic rules with near-zero false positives.
@@ -96,6 +137,9 @@ the project actually contains. Inspect first, write second, run third.
 
 - Writing `include` and losing the rule's default excludes (tests,
   `.d.ts`).
+- Restating a preset's options next to a severity override, on the
+  assumption that a bare severity discards them. It does not, and the copy
+  stops tracking the preset.
 - Enabling `codegen-drift` with a generator that needs services or secrets
   the environment does not have. The rule runs the command for real.
 - Mapping every document onto every rule in `guidelines`. Map only documents

@@ -3,6 +3,7 @@
  *
  * @packageDocumentation
  */
+import { isAbsolute, relative } from "node:path";
 import { styleText } from "node:util";
 import { locationOf, type ReportedDiagnostic } from "../core/diagnostic.ts";
 import type { RuleResult, RunEvent } from "../core/engine.ts";
@@ -117,6 +118,22 @@ function renderDiagnostic(diagnostic: ReportedDiagnostic): string[] {
 }
 
 /**
+ * Shortens a guideline path for display.
+ *
+ * @remarks A guideline inherited from an extended config is stated as an
+ * absolute path, so that it keeps pointing at the preset that ships it. Left
+ * alone it fills a terminal line with the path to `node_modules`; shown
+ * against the working directory it reads as the short path a reader can open.
+ * @param path - The guideline path as reported.
+ * @returns The path to print.
+ */
+function forDisplay(path: string): string {
+  if (!isAbsolute(path)) return path;
+  const nearby = relative(process.cwd(), path);
+  return nearby.startsWith("..") ? path : nearby;
+}
+
+/**
  * Prints the findings of every rule that had any.
  *
  * @param rules - Per-rule results.
@@ -139,7 +156,7 @@ function printFindings(rules: RuleResult[]): void {
       });
       const docs = result.diagnostics[0]?.docs ?? [];
       if (docs.length > 0) {
-        const shown = docs.map((entry) => entry.path).join(", ");
+        const shown = docs.map((entry) => forDisplay(entry.path)).join(", ");
         process.stdout.write(`  ${paint("dim", `→ ${shown}`)}\n`);
       }
     });

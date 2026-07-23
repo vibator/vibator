@@ -108,6 +108,12 @@ default severity.
 `guidelines` maps your own documents onto rules, so a finding points the agent
 at your standards as well as the rule's own guideline.
 
+`extends` builds on a shared config, given as a path or a package specifier,
+so several projects can hold one standard and state only what differs. Fields
+merge one at a time and arrays replace, as in Biome, so a bare severity keeps
+the preset's options. A preset can ship its own guidelines, and findings point
+at them wherever it is installed.
+
 ## Rules
 
 | Rule                   | Default | Checks                                          |

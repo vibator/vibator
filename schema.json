@@ -5,6 +5,20 @@
     "$schema": {
       "type": "string"
     },
+    "extends": {
+      "description": "Configs this one builds on: a path starting with . or a package specifier. Later entries win; this file wins over all of them.",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
     "plugins": {
       "description": "Paths or package names of modules contributing rules",
       "type": "array",

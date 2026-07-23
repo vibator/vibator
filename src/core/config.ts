@@ -3,9 +3,10 @@
  *
  * @packageDocumentation
  */
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { z } from "zod";
+import { resolveConfigChain } from "./config-extends.ts";
 import type { Severity } from "./diagnostic.ts";
 import type { AnyRule } from "./rule.ts";
 
@@ -37,10 +38,22 @@ const ruleSettingSchema = z.union([
   z.array(ruleBlockSchema).min(1),
 ]);
 
+/**
+ * Configs this one builds on.
+ *
+ * @remarks A repo-relative path or a package specifier, resolved against the
+ * file that declares it. Later entries win over earlier ones, and the file's
+ * own settings win over all of them. A child's fields win one by one, unset
+ * fields inherit, and arrays replace rather than concatenate, which is how
+ * Biome behaves and so what a reader of this stack already expects.
+ */
+const extendsSchema = z.union([z.string(), z.array(z.string())]);
+
 /** The whole config file. */
 const configSchema = z.object({
   $schema: z.string().optional(),
   root: z.string().optional(),
+  extends: extendsSchema.optional(),
   plugins: z.array(z.string()).default([]),
   rules: z.record(z.string(), ruleSettingSchema).default({}),
   guidelines: z.record(z.string(), z.array(z.string())).default({}),
@@ -90,9 +103,7 @@ export function loadConfig(root: string, explicitPath?: string): Config {
     return configSchema.parse({});
   }
 
-  const parsed = configSchema.safeParse(
-    JSON.parse(readFileSync(found, "utf8")),
-  );
+  const parsed = configSchema.safeParse(resolveConfigChain(found));
   if (!parsed.success) {
     throw new Error(
       `Invalid config in ${found}:\n${z.prettifyError(parsed.error)}`,
