@@ -1,6 +1,6 @@
 # Configuration
 
-vibator reads `vibator.json` (or `.vibator.json`) at the project root. Every
+Vibator reads `vibator.json` (or `.vibator.json`) at the project root. Every
 field is optional. With no config file at all, every built-in rule runs at
 its own default severity. `vibator init` writes a valid starting point.
 
@@ -217,7 +217,7 @@ not sandbox the rule.
 
 ## The JSON reporter
 
-For CI, and for tools acting on findings:
+For CI, and for agents acting on findings:
 
 ```json
 {
@@ -258,9 +258,9 @@ For CI, and for tools acting on findings:
 }
 ```
 
-`message`, `expected` and `fix` are separate fields so a tool can act on
-`fix` without parsing prose. `docs` lists the guideline in force first, then
-any project documents mapped to the rule, each with an `absolutePath` that
-can be opened directly regardless of where the package manager installed the
-package. `snippet` contains the lines around the finding. A rule that crashed
-carries an `error` string instead of diagnostics.
+`message`, `expected` and `fix` stay separate so an agent can act on `fix`
+without parsing prose. `docs` lists the guideline in force first, then any
+project documents mapped to the rule, each with an `absolutePath` it can open
+directly, wherever the package manager installed the package. `snippet`
+carries the lines around the finding, so triage costs no extra reads. A rule
+that crashed carries an `error` string instead of diagnostics.

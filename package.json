@@ -1,7 +1,7 @@
 {
   "name": "vibator",
   "version": "0.1.1",
-  "description": "Quality gate engine with configurable, glob-scoped rules. Each finding reports what is wrong, what was expected, and how to fix it in separate machine-readable fields.",
+  "description": "Quality gate framework for coding agents.",
   "type": "module",
   "license": "MIT",
   "author": "Josep Boix Requesens",
@@ -19,6 +19,7 @@
     "guardrails",
     "static-analysis",
     "ai",
+    "coding-agents",
     "codegen"
   ],
   "bin": {

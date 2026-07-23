@@ -2,7 +2,9 @@
 
 The built-in rules are a starting set. Most projects have standards of their
 own: a naming convention for one directory, a boundary a linter cannot see, a
-file that must never import another. Those belong in a custom rule.
+file that must never import another. These are the standards an agent would
+otherwise carry in a prompt, or enforce with a throwaway script. They belong
+in a custom rule.
 
 First check that you need one. A standard that a regular expression over
 lines can express (a forbidden import, a banned call, a TODO without a
@@ -98,7 +100,8 @@ Reach for `project` only when the question genuinely spans files.
 
 ## Diagnostics
 
-The three message fields are the core of this tool. Keep them distinct.
+The three message fields are the core of this tool: they turn a failed check
+into an instruction. Keep them distinct.
 
 ```ts
 {
@@ -117,8 +120,8 @@ The three message fields are the core of this tool. Keep them distinct.
 - `fix`: the concrete next action. A person or a tool should be able to act
   on this line alone, without opening the guideline.
 
-A consumer of `--reporter json` reads these as three fields. Do not collapse
-them into one prose sentence.
+An agent reading `--reporter json` acts on the three fields separately. Do
+not collapse them into one prose sentence.
 
 Write `fix` as an instruction, not a diagnosis. "Split it into focused
 modules" is actionable; "this file is too long" repeats `message`.
