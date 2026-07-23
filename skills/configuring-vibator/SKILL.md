@@ -24,6 +24,9 @@ the project actually contains. Inspect first, write second, run third.
   every default buries the lines that matter.
 - **`include` and `exclude` replace a rule's defaults.** They do not merge.
   Copy the defaults you still want before narrowing.
+- **Never set `recommended: false` to make a run pass.** It disables every
+  rule the config does not name, the passing ones included. It exists to
+  state a deliberate selection, and that selection is a human's call.
 - **A config the project extends is not yours to edit.** A preset states a
   standard several projects share. Configure the difference locally, or ask
   a human to change the preset. Never quieten this repository by editing a
@@ -119,6 +122,10 @@ already expects. Two consequences to get right:
 Write only the difference. A config that repeats what the preset already
 says is indistinguishable from one that disagrees with it, and the next
 preset update will not reach the fields you copied.
+
+A preset built as a curated selection sets `"recommended": false` and lists
+the rules it wants. Under such a preset, unnamed rules do not run, so check
+for it before concluding a rule is missing.
 
 Guideline paths behave accordingly: `docs` and `guidelines` entries stated
 by a preset resolve against the preset, so findings point at the prose that

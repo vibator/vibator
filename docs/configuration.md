@@ -188,6 +188,36 @@ back to walking the filesystem.
 
 ---
 
+## `recommended`
+
+Whether rules this config never names run at their own default severity.
+`true` unless set otherwise.
+
+```json
+{
+  "recommended": false,
+  "rules": { "max-lines": "error", "no-conflict-markers": "error" }
+}
+```
+
+This config runs two rules and nothing else. With `recommended` at its
+default of `true`, it would also run every other rule at that rule's default
+severity, which is what makes a fresh install useful with no config at all.
+
+Once `recommended` is `false`, a rule runs only if the config names it. A
+rule listed without a severity runs at its own default, so `"max-lines": {}`
+is enough to enable one. Rules whose default severity is `off` are
+unaffected either way; they never run unconfigured.
+
+Set it `false` to state a deliberate selection, not to quiet a failing run:
+it disables every unlisted rule, the passing ones included.
+
+Under `extends`, the nearest config wins, as with any other field. A preset
+can set it `false` and hand down a curated list; a project extending that
+preset can set it back to `true`.
+
+---
+
 ## `plugins`
 
 Paths or package names of modules contributing rules. See

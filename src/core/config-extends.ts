@@ -43,6 +43,8 @@ export interface RawConfig {
   root?: string;
   /** Configs this one builds on, nearest last. */
   extends?: string | string[];
+  /** Whether unnamed rules run at their own default severity. */
+  recommended?: boolean;
   /** Modules contributing rules. */
   plugins?: string[];
   /** Settings keyed by rule id. */
@@ -269,6 +271,7 @@ function mergeConfig(parent: RawConfig, child: RawConfig): RawConfig {
   return {
     $schema: child.$schema,
     root: child.root,
+    recommended: child.recommended ?? parent.recommended,
     plugins: [
       ...new Set([...(parent.plugins ?? []), ...(child.plugins ?? [])]),
     ],

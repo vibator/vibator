@@ -54,6 +54,7 @@ const configSchema = z.object({
   $schema: z.string().optional(),
   root: z.string().optional(),
   extends: extendsSchema.optional(),
+  recommended: z.boolean().default(true),
   plugins: z.array(z.string()).default([]),
   rules: z.record(z.string(), ruleSettingSchema).default({}),
   guidelines: z.record(z.string(), z.array(z.string())).default({}),
@@ -146,6 +147,8 @@ function guidelinesFor(config: Config, ruleId: string): string[] {
  * @remarks Rules absent from config still run, at their own default severity.
  * A quality gate that silently checks nothing until configured is worse than
  * one that is occasionally too noisy, and `"off"` is always one line away.
+ * Setting `recommended` to `false` inverts that: only rules the config names
+ * run, the shape a curated preset or a deliberately narrow gate wants.
  * @param config - The loaded config.
  * @param rules - The rules to resolve.
  * @param known - Every registered rule, when `rules` is a subset. Config keys
@@ -222,13 +225,20 @@ function resolveBlock(
 /**
  * Resolves one rule against config.
  *
+ * @remarks A rule the config never mentions runs only while `recommended`
+ * holds; once it is `false`, naming a rule is what enables it. Only an
+ * explicit `false` drops the baseline: {@link Config} is public API, and a
+ * caller building one by hand rather than through {@link loadConfig} must
+ * not lose every rule to an absent field.
  * @param config - The loaded config.
  * @param rule - The rule to resolve.
  * @returns One entry per enabled settings block; none when the rule is off.
  * @throws When any block's options fail the rule's own schema.
  */
 function resolveOne(config: Config, rule: AnyRule): ResolvedRule[] {
-  return blocksOf(config.rules[rule.id]).flatMap((block) =>
+  const setting = config.rules[rule.id];
+  if (setting === undefined && config.recommended === false) return [];
+  return blocksOf(setting).flatMap((block) =>
     resolveBlock(config, rule, block),
   );
 }

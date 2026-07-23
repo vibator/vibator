@@ -149,6 +149,27 @@ describe("resolveConfigChain", () => {
     expect(merged.plugins).toEqual(["pkg-one", "pkg-two"]);
   });
 
+  it("carries recommended through a config that extends nothing", () => {
+    const directory = fixture({ "vibator.json": { recommended: false } });
+    expect(
+      resolveConfigChain(join(directory, "vibator.json")).recommended,
+    ).toBe(false);
+  });
+
+  it("inherits recommended, and lets the nearest config win", () => {
+    const directory = fixture({
+      "base.json": { recommended: false },
+      "inherits.json": { extends: "./base.json" },
+      "overrides.json": { extends: "./base.json", recommended: true },
+    });
+    expect(
+      resolveConfigChain(join(directory, "inherits.json")).recommended,
+    ).toBe(false);
+    expect(
+      resolveConfigChain(join(directory, "overrides.json")).recommended,
+    ).toBe(true);
+  });
+
   it("does not inherit root, which describes only the file stating it", () => {
     const directory = fixture({
       "base.json": { root: "packages/api" },

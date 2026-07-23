@@ -19,6 +19,10 @@
         }
       ]
     },
+    "recommended": {
+      "description": "Whether rules this config never names run at their own default severity. True by default; set false to run only the rules listed here.",
+      "type": "boolean"
+    },
     "plugins": {
       "description": "Paths or package names of modules contributing rules",
       "type": "array",

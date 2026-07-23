@@ -23,7 +23,12 @@ const sample: AnyRule = {
  * @returns A config object.
  */
 function configWith(entry: unknown): Config {
-  return { plugins: [], rules: { sample: entry }, guidelines: {} } as Config;
+  return {
+    recommended: true,
+    plugins: [],
+    rules: { sample: entry },
+    guidelines: {},
+  } as Config;
 }
 
 describe("resolveRules", () => {
@@ -65,6 +70,43 @@ describe("resolveRules", () => {
       guidelines: {},
     } as Config;
     expect(() => resolveRules(config, [sample])).toThrow(/Unknown rule/);
+  });
+
+  it("treats an absent recommended field as on, not as off", () => {
+    const config = { plugins: [], rules: {}, guidelines: {} } as Config;
+    expect(resolveRules(config, [sample])).toHaveLength(1);
+  });
+
+  it("drops unnamed rules once recommended is off", () => {
+    const config = {
+      recommended: false,
+      plugins: [],
+      rules: {},
+      guidelines: {},
+    } as Config;
+    expect(resolveRules(config, [sample])).toEqual([]);
+  });
+
+  it("runs a named rule at its own default once recommended is off", () => {
+    const config = {
+      recommended: false,
+      plugins: [],
+      rules: { sample: {} },
+      guidelines: {},
+    } as Config;
+    const [resolved] = resolveRules(config, [sample]);
+    expect(resolved?.severity).toBe("error");
+    expect(resolved?.options).toEqual({ limit: 5 });
+  });
+
+  it("still honours an explicit severity once recommended is off", () => {
+    const config = {
+      recommended: false,
+      plugins: [],
+      rules: { sample: "warn" },
+      guidelines: {},
+    } as Config;
+    expect(resolveRules(config, [sample])[0]?.severity).toBe("warn");
   });
 
   it("rejects options that fail the rule's schema", () => {
