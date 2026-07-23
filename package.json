@@ -1,6 +1,6 @@
 {
   "name": "vibator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Quality gate engine with configurable, glob-scoped rules. Each finding reports what is wrong, what was expected, and how to fix it in separate machine-readable fields.",
   "type": "module",
   "license": "MIT",
