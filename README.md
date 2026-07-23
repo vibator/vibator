@@ -103,7 +103,9 @@ Each rule takes `severity` (`error`, `warn` or `off`), `include`, `exclude`
 and its own `options`. A bare string is shorthand for the severity. An array
 of blocks runs the rule once per block, so different areas of a codebase can
 have different budgets. Rules absent from the config still run at their
-default severity.
+default severity, so a fresh install checks something before anyone has
+configured anything. Set `"recommended": false` to run only the rules the
+config names.
 
 `guidelines` maps your own documents onto rules, so a finding points the agent
 at your standards as well as the rule's own guideline.

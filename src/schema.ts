@@ -49,6 +49,13 @@ function configFileSchema(rules: Record<string, z.ZodType>): z.ZodType {
         "Configs this one builds on: a path starting with . or a package specifier. " +
           "Later entries win; this file wins over all of them.",
       ),
+    recommended: z
+      .boolean()
+      .optional()
+      .describe(
+        "Whether rules this config never names run at their own default severity. " +
+          "True by default; set false to run only the rules listed here.",
+      ),
     plugins: z
       .array(z.string())
       .optional()
