@@ -79,13 +79,13 @@ Every rule ships with:
 
 ## Style
 
-Biome owns formatting and general lint (cognitive complexity at most 8,
-functions at most 25 lines, no stray `console`). dependency-cruiser owns the
-layer boundaries: `core` knows no rule or reporter, and `typescript` is only
-imported type-only or dynamically. knip keeps exports and dependencies in
-use or gone. On top of those, the repository checks itself with its own
-rules via `vibator.json`: TSDoc on every declaration, files under 400 lines,
-meaningful names.
+- Biome owns formatting and general lint (cognitive complexity at most 8,
+  functions at most 25 lines, no stray `console`).
+- dependency-cruiser owns the layer boundaries: `core` knows no rule or
+  reporter, and `typescript` is only imported type-only or dynamically.
+- knip keeps exports and dependencies in use or gone.
+- The repository checks itself with its own rules via `vibator.json`: TSDoc
+  on every declaration, files under 400 lines, meaningful names.
 
 Documentation and user-visible strings (CLI output, rule messages, `fix`
 texts) use plain, direct language: short declarative sentences, no
@@ -98,4 +98,4 @@ a pull request; open an issue about the rule instead.
 
 Keep them scoped to one change. Fill in the template, including the local
 verification checklist. CI runs the same `verify` chain plus commit linting.
-A green run plus a review is what merges.
+A pull request merges with a green run and a review.

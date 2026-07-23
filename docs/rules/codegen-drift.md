@@ -7,7 +7,7 @@ Regenerating must not change anything already committed.
 Database migrations against a schema, API clients against a spec, types
 against a query: the failure mode is the same in each case. The code type
 checks, the tests pass against freshly generated output, and the bug appears
-only where the committed artifact is the one that runs.
+only where the committed artifact runs.
 
 ## What is expected
 

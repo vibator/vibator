@@ -46,8 +46,8 @@ background.
 - **Never edit `vibator.json` to make a run pass.** No severity downgrades,
   no new excludes, no `off`. The config is the project's standard; changing
   the standard is a human decision, not a fix. This covers any config it
-  extends: a preset is a standard several projects share, so editing one to
-  quieten this repository is the same mistake made larger.
+  extends: a preset is a standard several projects share, so editing it to
+  silence this repository breaks the standard for all of them.
 - **Do not restate `message` as a code comment** or otherwise annotate the
   violation. Fix it.
 - **Do not blanket-ignore.** The escape hatch exists for the case where the
@@ -59,9 +59,9 @@ background.
   ```
 
   The reason is required and must survive review. If you find yourself
-  writing the same reason three times, stop: either the code wants a
-  different shape, or the rule's configuration needs a human's attention.
-  Say so instead of continuing.
+  writing the same reason three times, stop: either the code needs a
+  different structure, or the rule's configuration needs a human's
+  attention. Say so instead of continuing.
 
 ## Failures that are not findings
 
@@ -69,4 +69,4 @@ A rule with an `error` field in the JSON crashed rather than checked
 anything. That is configuration or environment, not code: a missing
 tsconfig, a generator that needs a running service, a locales root that
 moved. Fix the configuration (see the `configuring-vibator` skill) or report
-it. Do not paper over it.
+it. Do not hide it.
