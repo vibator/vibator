@@ -16,7 +16,7 @@ jobs:
         id: bot-token
         uses: actions/create-github-app-token@v3
         with:
-          app-id: ${{ vars.RELEASE_APP_ID }}
+          app-id: ${{ secrets.RELEASE_APP_ID }}
           private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
 
       - name: Checkout
@@ -55,5 +55,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.bot-token.outputs.token }}
         run: >-
-          npx --yes -p semantic-release@24 -p @semantic-release/git@10
+          npx --yes -p semantic-release@25 -p @semantic-release/git@11
           semantic-release
