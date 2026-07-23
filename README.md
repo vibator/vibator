@@ -1,26 +1,39 @@
-# vibator
+<div align="center">
+  <h1>Vibator</h1>
+  <img src="https://raw.githubusercontent.com/vibator/vibator/main/assets/logo.svg" alt="Vibator Logo" width="128" height="128">
 
-[![Quality](https://github.com/vibator/vibator/actions/workflows/quality.yml/badge.svg)](https://github.com/vibator/vibator/actions/workflows/quality.yml)
-[![npm version](https://img.shields.io/npm/v/vibator)](https://www.npmjs.com/package/vibator)
-[![node](https://img.shields.io/node/v/vibator)](https://nodejs.org)
-[![license: MIT](https://img.shields.io/npm/l/vibator)](./LICENSE)
+  [![Quality](https://github.com/vibator/vibator/actions/workflows/quality.yml/badge.svg)](https://github.com/vibator/vibator/actions/workflows/quality.yml)
+  [![npm version](https://img.shields.io/npm/v/vibator)](https://www.npmjs.com/package/vibator)
+  [![node](https://img.shields.io/node/v/vibator)](https://nodejs.org)
+  [![license: MIT](https://img.shields.io/npm/l/vibator)](./LICENSE)
+</div>
 
-vibator is a quality gate engine: a runner for configurable, glob-scoped
-rules. Every finding carries three separate fields (`message`, `expected`,
-`fix`), the source lines around it, and a path to the document that states
-the standard. The output is meant to be read by humans and consumed directly
-by CI tooling and coding agents.
+Vibator is a quality gate framework for coding agents. It converts prompts
+into deterministic, actionable checks, and declutters the style-check scripts
+that AI-assisted coding leaves behind.
 
 ## Why
 
-Linters check syntax and type checkers check types. Neither catches a class
-of defects that is common in generated and fast-moving code: files that grow
-without limit, a translation key added to one locale only, an environment
-variable that is read but never documented, generated files that were never
-regenerated, calls to deprecated APIs that still compile.
+When working with coding agents, the usual approach is to instruct the agent
+about style through guides and prompts that are not actionable. The agent
+deviates from those instructions as the context grows, and forgets to apply
+them. Linters and style checkers mitigate the problem, but where a rule falls
+outside their reach, the agent falls back on writing custom style-check
+scripts of its own.
 
-vibator does not replace a formatter, a linter, a type checker or a dead-code
-tool. It covers checks those tools do not.
+Vibator bridges the gap between those frameworks and the agent's intent. It
+gives coding agents a framework for writing the rules they want to check, in
+plain JavaScript or TypeScript, along with a set of features and ready-made
+rules that declutter those scripts and keep them maintainable.
+
+When the agent hits a warning or an error, a guideline stating how to resolve
+it and what to expect is attached to the finding, so the context is fresh and
+the agent fixes the problem at its source instead of endlessly searching the
+code for it.
+
+Vibator is meant to be used alongside other linting and style-check
+frameworks. We encourage vibe coders to run a solid stack of Biome, knip and
+dependency-cruiser with strict rules.
 
 ## Install
 
@@ -33,9 +46,11 @@ bun add -d vibator
 
 Requires Node 22 or later. TypeScript is an optional peer dependency, needed
 only by the AST-based rules; the type-aware rules resolve and use the
-project's own TypeScript installation. Supported versions are 5.4 up to 6.x;
-TypeScript 7 is not yet supported because its native compiler does not
-expose the JS compiler API the rules use.
+project's own TypeScript installation. Supported versions are 5.4 up to 6.x.
+
+> [!NOTE]
+> TypeScript 7 is not yet supported, because its native compiler does not
+> expose the JS compiler API the rules use.
 
 ## Usage
 
@@ -52,11 +67,12 @@ npx vibator init                  # write a starter vibator.json
 ```
 
 The exit code is 1 when any error-severity finding is reported. Warnings do
-not fail the run. Every rule runs even after one fails.
+not fail the run.
 
-`--since origin/main` is the recommended way to adopt vibator on a codebase
-with existing violations: new work is checked immediately, old files are
-checked when they are next touched, and no baseline file is needed.
+> [!TIP]
+> Use `--since origin/main` to adopt Vibator on a codebase with existing
+> violations: new work is checked immediately and old files only when they are
+> touched.
 
 ## Configuration
 
@@ -88,8 +104,8 @@ of blocks runs the rule once per block, so different areas of a codebase can
 have different budgets. Rules absent from the config still run at their
 default severity.
 
-`guidelines` maps your own documents onto rules, so a finding points at your
-standards as well as the rule's own guideline.
+`guidelines` maps your own documents onto rules, so a finding points the agent
+at your standards as well as the rule's own guideline.
 
 ## Rules
 
@@ -113,18 +129,23 @@ to ban, a locales directory, generator commands) before they can run.
 
 `vibator explain <rule>` prints the full guideline for any rule.
 
-`banned-patterns` is the fastest way to add a project-specific check: each
-entry is a regular expression with its own `message`, `expected` and `fix`,
-configured in JSON without writing a plugin.
+`banned-patterns` is the fastest way for an agent to add a project-specific
+check: each entry is a regular expression with its own `message`, `expected`
+and `fix`, configured in JSON without writing a plugin.
 
 ## Design notes
 
-- **No baselines.** There is no suppression file. A single line can be
-  exempted with `// vibator-ignore: <reason>`, and the reason is required.
-  For incremental adoption, scope the run with `--changed` or `--since`.
+- **No baselines.** There is no suppression file: a recorded violation stops
+  being a violation, and an agent that reads one learns the standard is
+  optional. A single line can be exempted with `// vibator-ignore: <reason>`,
+  and the reason is required. For incremental adoption, scope the run with
+  `--changed` or `--since`.
 - **Discovery defers to git.** The candidate file set is what git tracks plus
   what it would keep, so `.gitignore` is honored and generated output is
   never reported.
+- **Self-sufficient output.** Findings carry their snippet and an absolute
+  path to every guideline, so a consumer never has to know where the package
+  manager put the package.
 - **Shared analysis.** Rules that need type information share one TypeScript
   program per tsconfig. Syntax-only rules share one parse per file.
 - **Few dependencies.** Globbing and terminal colors come from Node itself.
@@ -132,7 +153,7 @@ configured in JSON without writing a plugin.
 
 ## Writing your own rules
 
-If the standard is expressible as a regular expression over lines, configure
+If the standard fits a regular expression over lines, configure
 `banned-patterns` instead of writing code. Otherwise a rule is a plain object
 with an `id`, a guideline, an options schema, glob defaults, and either
 `checkFile` (per file) or `check` (per project):
@@ -197,7 +218,8 @@ npx vibator skills               # list what is bundled
 ## Guidelines
 
 Every rule ships a guideline in `docs/rules/`. It is what
-`vibator explain <rule>` prints and what findings point at.
+`vibator explain <rule>` prints and what findings point at, so the standard
+reaches the agent at the moment the check fails.
 
 To replace a rule's guideline with your own document:
 

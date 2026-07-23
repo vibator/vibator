@@ -45,7 +45,7 @@ export interface CliArguments {
 }
 
 /** What `vibator --help` prints. */
-export const USAGE = `vibator, a quality gate engine
+export const USAGE = `vibator, a quality gate framework for coding agents
 
 Usage
   vibator [check] [flags]      run every enabled rule

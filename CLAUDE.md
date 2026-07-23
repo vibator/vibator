@@ -4,16 +4,19 @@ Read this fully before writing code here.
 
 ## What this is
 
-A quality gate engine: a runner for configurable, glob-scoped rules. Every
-finding reports three separate fields: `message` (what is wrong), `expected`
-(the standard), and `fix` (the next action). Humans read them as a sentence;
-tools and agents act on `fix` without parsing prose.
+A quality gate framework for coding agents: a runner for configurable,
+glob-scoped rules. Every finding reports three separate fields: `message`
+(what is wrong), `expected` (the standard), and `fix` (the next action).
+Humans read them as a sentence; tools and agents act on `fix` without
+parsing prose.
 
-It exists because linters check syntax and type checkers check types, and
-neither catches a class of defects common in generated code: files that grow
-without limit, a translation key added to one locale only, an env var read
-but never documented, generated files never regenerated, deprecated APIs
-that still compile.
+It exists because the standards an agent is given in a prompt stop being
+applied as the context grows, and because linters check syntax and type
+checkers check types. Neither catches a class of defects common in generated
+code: files that grow without limit, a translation key added to one locale
+only, an env var read but never documented, generated files never
+regenerated, deprecated APIs that still compile. Without a runner, an agent
+enforces those with throwaway scripts.
 
 Published to npm as `vibator`. Nothing in this repository may name a
 downstream project. It was extracted from one, and it must stay generic.
