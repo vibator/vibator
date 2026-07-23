@@ -5,10 +5,11 @@ Read this fully before writing code here.
 ## What this is
 
 A quality gate framework for coding agents: a runner for configurable,
-glob-scoped rules. Every finding reports three separate fields: `message`
-(what is wrong), `expected` (the standard), and `fix` (the next action).
-Humans read them as a sentence; tools and agents act on `fix` without
-parsing prose.
+glob-scoped rules. It targets JavaScript and TypeScript projects, though some
+rules apply to any file their globs select. Every finding reports three
+separate fields: `message` (what is wrong), `expected` (the standard), and
+`fix` (the next action). Humans read them as a sentence; tools and agents act
+on `fix` without parsing prose.
 
 It exists because the standards an agent is given in a prompt stop being
 applied as the context grows, and because linters check syntax and type
