@@ -68,7 +68,7 @@ the project actually contains. Inspect first, write second, run third.
 4. **Wire existing project documents onto rules** with `guidelines`. If the
    repo has an `AGENTS.md`, `CLAUDE.md` or style document that states a
    standard a rule enforces, map it:
-   `"guidelines": {"AGENTS.md": ["max-lines"]}`. Use the per-rule `docs`
+   `"guidelines": {"AGENTS.md": ["tsdoc-coverage"]}`. Use the per-rule `docs`
    field only when the project's standard replaces the shipped guideline
    rather than adding context.
 
@@ -76,9 +76,9 @@ the project actually contains. Inspect first, write second, run third.
    times with different globs and options:
 
    ```json
-   "max-lines": [
-     {"include": ["src/**/*.ts"], "options": {"max": 400}},
-     {"include": ["tests/**/*.ts"], "options": {"max": 800}}
+   "max-file-size": [
+     {"include": ["src/**"], "options": {"maxKb": 256}},
+     {"include": ["assets/**"], "options": {"maxKb": 4096}}
    ]
    ```
 
@@ -104,16 +104,16 @@ the file's own settings win over all of them.
 ```json
 {
   "extends": ["@acme/quality/vibator.json"],
-  "rules": { "max-lines": "warn" }
+  "rules": { "max-file-size": "warn" }
 }
 ```
 
 The merge follows Biome, so it behaves as users of that stack expect. Two
 consequences to get right:
 
-- **A bare severity keeps everything else.** Writing `"max-lines": "warn"`
-  over a preset that set `max` and `include` changes only the severity; the
-  budget and globs are inherited. You do not need to restate them, and
+- **A bare severity keeps everything else.** Writing `"max-file-size": "warn"`
+  over a preset that set `maxKb` and `include` changes only the severity;
+  the budget and globs are inherited. You do not need to restate them, and
   restating them is how a project silently drifts from its preset.
 - **Arrays replace, they do not concatenate.** To add one entry to an
   inherited `allow` or `patterns` list, write the whole list you want. This

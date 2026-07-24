@@ -57,13 +57,13 @@ project's own TypeScript installation. Supported versions are 5.4 up to 6.x.
 
 ```sh
 npx vibator                       # run every enabled rule
-npx vibator --only max-lines      # run one
+npx vibator --only tsdoc-coverage  # run one
 npx vibator --reporter json       # machine-readable output
 npx vibator --staged              # check only files staged for the next commit
 npx vibator --changed             # check only uncommitted changes
 npx vibator --since origin/main   # check only what this branch touched
 npx vibator list                  # every rule and its default severity
-npx vibator explain max-lines     # the guideline behind a rule
+npx vibator explain tsdoc-coverage  # the guideline behind a rule
 npx vibator init                  # write a starter vibator.json
 ```
 
@@ -86,21 +86,21 @@ not fail the run.
   "$schema": "./node_modules/vibator/schema.json",
   "rules": {
     "no-conflict-markers": "error",
-    "max-lines": [
+    "max-file-size": [
       {
         "include": [
-          "src/**/*.{ts,tsx}"
+          "src/**"
         ],
         "options": {
-          "max": 400
+          "maxKb": 256
         }
       },
       {
         "include": [
-          "tests/**"
+          "assets/**"
         ],
         "options": {
-          "max": 800
+          "maxKb": 4096
         }
       }
     ],
@@ -109,7 +109,7 @@ not fail the run.
   },
   "guidelines": {
     "docs/code-style.md": [
-      "max-lines",
+      "tsdoc-coverage",
       "meaningful-names"
     ]
   }
@@ -137,7 +137,6 @@ not fail the run.
 |-------------------------|---------|-------------------------------------------------|
 | `no-conflict-markers`   | error   | Committed merge conflict markers                |
 | `max-file-size`         | error   | Oversized files committed by mistake            |
-| `max-lines`             | error   | Files over a line budget                        |
 | `banned-patterns`       | off¹    | Project-specific banned patterns, in plain JSON |
 | `no-dead-doc-links`     | error   | Relative Markdown links that resolve to nothing |
 | `locale-parity`         | off¹    | Locales missing keys the source locale has      |
@@ -255,13 +254,13 @@ the moment the check fails.
 To replace a rule's guideline with your own document:
 
 ```json
-"max-lines": {"docs": "docs/our-file-length-policy.md"}
+"max-file-size": {"docs": "docs/our-file-size-policy.md"}
 ```
 
 To add project context without replacing the shipped guideline:
 
 ```json
-"guidelines": {"docs/code-style.md": ["max-lines", "meaningful-names"]}
+"guidelines": {"docs/code-style.md": ["tsdoc-coverage", "meaningful-names"]}
 ```
 
 ## Documentation

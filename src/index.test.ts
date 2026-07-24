@@ -19,7 +19,7 @@ describe("public API", () => {
     expect(typeof createContext).toBe("function");
     expect(typeof jsonReporter).toBe("function");
     expect(typeof prettyReporter).toBe("function");
-    expect(BUILT_IN_RULES.length).toBeGreaterThanOrEqual(12);
+    expect(BUILT_IN_RULES.length).toBeGreaterThanOrEqual(11);
   });
 
   it("defineRule is an identity function that preserves the rule", () => {

@@ -37,9 +37,12 @@ function runCli(cwd: string, cliArguments: string[]): CliOutcome {
 }
 
 describe("the CLI against fixture projects", () => {
-  it("fails a bare JavaScript project with an oversized file, as JSON", () => {
+  it("fails a bare JavaScript project with a conflict marker, as JSON", () => {
     const root = mkdtempSync(join(tmpdir(), "vibator-fixture-"));
-    writeFileSync(join(root, "big.js"), "let counter = 0;\n".repeat(401));
+    writeFileSync(
+      join(root, "conflicted.js"),
+      "let counter = 0;\n<<<<<<< HEAD\nlet other = 1;\n",
+    );
     writeFileSync(join(root, "small.js"), "let counter = 0;\n");
 
     const { status, stdout } = runCli(root, ["--reporter", "json"]);
@@ -47,12 +50,12 @@ describe("the CLI against fixture projects", () => {
 
     const report = JSON.parse(stdout);
     expect(report.ok).toBe(false);
-    const maxLines = report.rules.find(
-      (entry: { ruleId: string }) => entry.ruleId === "max-lines",
+    const conflictMarkers = report.rules.find(
+      (entry: { ruleId: string }) => entry.ruleId === "no-conflict-markers",
     );
-    expect(maxLines.diagnostics[0].file).toBe("big.js");
-    expect(maxLines.diagnostics[0].fix).toBeTruthy();
-    expect(maxLines.diagnostics[0].snippet).toContain("401");
+    expect(conflictMarkers.diagnostics[0].file).toBe("conflicted.js");
+    expect(conflictMarkers.diagnostics[0].fix).toBeTruthy();
+    expect(conflictMarkers.diagnostics[0].snippet).toContain("<<<<<<<");
     // No rule may crash on a project with no TypeScript and no git.
     for (const entry of report.rules) {
       expect(entry.error).toBeUndefined();

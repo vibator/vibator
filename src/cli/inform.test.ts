@@ -56,15 +56,15 @@ describe("docs", () => {
 describe("explain", () => {
   it("prints the guideline shipped with a rule", () => {
     const { logged } = captureOutput();
-    explain("max-lines", BUILT_IN_RULES, process.cwd(), EMPTY_CONFIG);
-    expect(logged.join("\n")).toContain("No source file longer");
+    explain("max-file-size", BUILT_IN_RULES, process.cwd(), EMPTY_CONFIG);
+    expect(logged.join("\n")).toContain("No oversized files");
   });
 
   it("rejects an unknown rule and names the known ones", () => {
     const { failed } = captureOutput();
     explain("nope", BUILT_IN_RULES, process.cwd(), EMPTY_CONFIG);
     expect(failed.join("\n")).toContain("Unknown rule");
-    expect(failed.join("\n")).toContain("max-lines");
+    expect(failed.join("\n")).toContain("max-file-size");
     expect(process.exitCode).toBe(1);
   });
 
@@ -73,9 +73,9 @@ describe("explain", () => {
     const config: Config = {
       plugins: [],
       rules: {},
-      guidelines: { "CLAUDE.md": ["max-lines"] },
+      guidelines: { "CLAUDE.md": ["max-file-size"] },
     };
-    explain("max-lines", BUILT_IN_RULES, process.cwd(), config);
+    explain("max-file-size", BUILT_IN_RULES, process.cwd(), config);
     expect(logged.join("\n")).toContain("Project guidelines: CLAUDE.md");
   });
 });
@@ -85,7 +85,7 @@ describe("list", () => {
     const { logged } = captureOutput();
     list(BUILT_IN_RULES);
     expect(logged).toHaveLength(BUILT_IN_RULES.length);
-    expect(logged.join("\n")).toMatch(/max-lines\s+error/);
+    expect(logged.join("\n")).toMatch(/max-file-size\s+error/);
   });
 });
 

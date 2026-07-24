@@ -6,7 +6,7 @@ import { jsonReporter } from "./json.ts";
 const RESULT: RunResult = {
   rules: [
     {
-      ruleId: "max-lines",
+      ruleId: "max-file-size",
       title: "No source file longer than the budget",
       files: 3,
       durationMs: 12,
@@ -17,10 +17,13 @@ const RESULT: RunResult = {
           message: "too long",
           expected: "shorter",
           fix: "split it",
-          ruleId: "max-lines",
+          ruleId: "max-file-size",
           severity: "error",
           docs: [
-            { path: "rules/max-lines.md", absolutePath: "/x/max-lines.md" },
+            {
+              path: "rules/max-file-size.md",
+              absolutePath: "/x/max-file-size.md",
+            },
           ],
           snippet: "> 401 | x",
         },
@@ -52,11 +55,11 @@ describe("jsonReporter", () => {
     const parsed = JSON.parse(written.join(""));
     expect(parsed.ok).toBe(false);
     expect(parsed.errors).toBe(1);
-    expect(parsed.rules[0].ruleId).toBe("max-lines");
+    expect(parsed.rules[0].ruleId).toBe("max-file-size");
 
     const diagnostic = parsed.rules[0].diagnostics[0];
     expect(diagnostic.fix).toBe("split it");
-    expect(diagnostic.docs[0].absolutePath).toBe("/x/max-lines.md");
+    expect(diagnostic.docs[0].absolutePath).toBe("/x/max-file-size.md");
     expect(diagnostic.snippet).toContain("401");
   });
 

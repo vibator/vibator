@@ -37,7 +37,7 @@ rule's options; CI fails if they are out of sync.
 `npm install` installs the hooks (husky):
 
 - **pre-commit**: Biome on staged files, plus vibator's fast rules
-  (`--staged --only no-conflict-markers,max-file-size,max-lines,no-dead-doc-links`)
+  (`--staged --only no-conflict-markers,max-file-size,no-dead-doc-links`)
   on the same scope. Runs in well under a second.
 - **commit-msg**: commitlint, because the commit type determines the release
   bump.

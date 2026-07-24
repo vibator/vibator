@@ -39,18 +39,20 @@ describe("resolveConfigChain", () => {
   it("inherits options through a bare severity, as Biome does", () => {
     const directory = fixture({
       "base.json": {
-        rules: { "max-lines": { options: { max: 400 }, include: ["src/**"] } },
+        rules: {
+          "max-file-size": { options: { maxKb: 400 }, include: ["src/**"] },
+        },
       },
       "vibator.json": {
         extends: "./base.json",
-        rules: { "max-lines": "warn" },
+        rules: { "max-file-size": "warn" },
       },
     });
     const merged = resolveConfigChain(join(directory, "vibator.json"));
-    expect(merged.rules?.["max-lines"]).toEqual({
+    expect(merged.rules?.["max-file-size"]).toEqual({
       severity: "warn",
       include: ["src/**"],
-      options: { max: 400 },
+      options: { maxKb: 400 },
     });
   });
 
