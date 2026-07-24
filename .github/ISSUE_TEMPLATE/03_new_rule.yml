@@ -1,0 +1,54 @@
+name: 💡 New rule
+description: Suggest a new built-in rule
+title: "💡 <TITLE>"
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a rule. A built-in rule qualifies when it is
+        deterministic, actionable in one line, low on false positives, and not
+        already covered by a formatter or type checker. If the standard fits a
+        regular expression over lines, configure the `banned-patterns` rule
+        instead of proposing a new one.
+  - type: input
+    id: rule-name
+    attributes:
+      label: Rule name
+      description: A kebab-case id for the rule, like `no-deprecated-apis`.
+    validations:
+      required: true
+  - type: textarea
+    id: what-it-checks
+    attributes:
+      label: What it checks
+      description: >
+        Describe the defect the rule catches and why existing tools (a
+        formatter, a type checker, `banned-patterns`) cannot express it.
+    validations:
+      required: true
+  - type: textarea
+    id: example-finding
+    attributes:
+      label: Example finding
+      description: >
+        Show a snippet that should be reported, with the three fields a
+        finding carries.
+      value: |
+        ```ts
+        // offending code
+        ```
+
+        - message: what is wrong
+        - expected: the standard
+        - fix: the next action
+    validations:
+      required: true
+  - type: checkboxes
+    id: coc
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/vibator/vibator/blob/main/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow Vibator's Code of Conduct
+          required: true
