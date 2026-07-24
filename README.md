@@ -33,8 +33,8 @@ the agent fixes the problem at its source instead of endlessly searching the
 code for it.
 
 Vibator is meant to be used alongside other linting and style-check
-frameworks. We encourage vibe coders to run a solid stack of Biome, knip and
-dependency-cruiser with strict rules.
+frameworks. We encourage vibe coders to run a solid stack of
+[Biome], [knip] and [dependency-cruiser] with strict rules.
 
 ## Install
 
@@ -175,7 +175,7 @@ and `fix`, configured in JSON without writing a plugin.
 - **Shared analysis.** Rules that need type information share one TypeScript
   program per tsconfig. Syntax-only rules share one parse per file.
 - **Few dependencies.** Globbing and terminal colors come from Node itself.
-  The only runtime dependency is `zod`.
+  The only runtime dependency is [`zod`][zod].
 
 ## Writing your own rules
 
@@ -282,3 +282,8 @@ trusted publishing.
 ## License
 
 [MIT](./LICENSE)
+
+[Biome]: https://biomejs.dev
+[knip]: https://knip.dev
+[dependency-cruiser]: https://github.com/sverweij/dependency-cruiser
+[zod]: https://zod.dev
