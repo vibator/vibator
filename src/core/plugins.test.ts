@@ -99,7 +99,7 @@ describe("mergeRules", () => {
 
   it("refuses a plugin shadowing a built-in id", () => {
     expect(() =>
-      mergeRules([ruleNamed("max-lines")], [ruleNamed("max-lines")]),
+      mergeRules([ruleNamed("max-file-size")], [ruleNamed("max-file-size")]),
     ).toThrow(/already taken by a built-in/);
   });
 

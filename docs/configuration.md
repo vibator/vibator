@@ -12,25 +12,25 @@ its own default severity. `vibator init` writes a valid starting point.
   ],
   "rules": {
     "no-conflict-markers": "error",
-    "max-lines": {
+    "max-file-size": {
       "severity": "error",
       "include": [
-        "src/**/*.{ts,tsx}"
+        "src/**"
       ],
       "exclude": [
         "**/*.test.*"
       ],
       "options": {
-        "max": 400
+        "maxKb": 256
       },
-      "docs": "docs/our-file-length-policy.md"
+      "docs": "docs/our-file-size-policy.md"
     },
     "env-example-sync": "warn",
     "locale-parity": "off"
   },
   "guidelines": {
     "docs/code-style.md": [
-      "max-lines",
+      "tsdoc-coverage",
       "meaningful-names"
     ]
   }
@@ -59,7 +59,7 @@ each project states only what differs.
 ```json
 {
   "extends": ["@acme/quality/vibator.json"],
-  "rules": { "max-lines": "warn" }
+  "rules": { "max-file-size": "warn" }
 }
 ```
 
@@ -81,12 +81,12 @@ In practice, a bare severity keeps everything else:
 
 ```json
 // the preset
-"max-lines": { "options": { "max": 400 }, "include": ["src/**/*.ts"] }
+"max-file-size": { "options": { "maxKb": 256 }, "include": ["src/**"] }
 
 // your config
-"max-lines": "warn"
+"max-file-size": "warn"
 
-// in force: warn severity, still 400 lines, still src/**/*.ts
+// in force: warn severity, still 256kB, still src/**
 ```
 
 Arrays replace so a project can remove an entry a preset allowed.
@@ -106,10 +106,10 @@ a working absolute path:
 
 ```json
 // @acme/quality/vibator.json
-"max-lines": { "docs": "guides/file-length.md" }
+"max-file-size": { "docs": "guides/file-size.md" }
 ```
 
-resolves to `node_modules/@acme/quality/guides/file-length.md`, and the JSON
+resolves to `node_modules/@acme/quality/guides/file-size.md`, and the JSON
 reporter reports that as the `absolutePath` an agent can open. Paths in your
 own config resolve against your project root.
 
@@ -121,13 +121,13 @@ Keyed by rule id. The value is a severity string, a settings block, or an
 array of settings blocks.
 
 ```json
-"max-lines": "warn"
+"max-file-size": "warn"
 ```
 
 is shorthand for
 
 ```json
-"max-lines": {"severity": "warn"}
+"max-file-size": {"severity": "warn"}
 ```
 
 | Field      | Default             | Meaning                                                      |
@@ -153,9 +153,9 @@ The array form runs a rule once per block, so different areas of one codebase
 can have different settings:
 
 ```json
-"max-lines": [
-  {"include": ["src/**/*.ts"], "options": {"max": 400}},
-  {"include": ["tests/**/*.ts"], "options": {"max": 800}}
+"max-file-size": [
+  {"include": ["src/**"], "options": {"maxKb": 256}},
+  {"include": ["assets/**"], "options": {"maxKb": 4096}}
 ]
 ```
 
@@ -195,7 +195,7 @@ Whether rules this config never names run at their own default severity.
 ```json
 {
   "recommended": false,
-  "rules": { "max-lines": "error", "no-conflict-markers": "error" }
+  "rules": { "max-file-size": "error", "no-conflict-markers": "error" }
 }
 ```
 
@@ -206,7 +206,7 @@ This config runs two rules and nothing else.
   config at all.
 - Once `recommended` is `false`, a rule runs only if the config names it.
   A rule listed without a severity runs at its own default, so
-  `"max-lines": {}` is enough to enable one.
+  `"max-file-size": {}` is enough to enable one.
 - Rules whose default severity is `off` are unaffected either way; they
   never run unconfigured.
 - Under `extends`, the nearest config wins. A preset can set it `false`
@@ -238,7 +238,7 @@ Maps your own documents onto rules, document path to rule ids:
 
 ```json
 "guidelines": {
-  "docs/code-style.md": ["max-lines", "meaningful-names"],
+  "docs/code-style.md": ["tsdoc-coverage", "meaningful-names"],
   "AGENTS.md": ["locale-parity", "codegen-drift"]
 }
 ```
@@ -253,7 +253,7 @@ field.
 
 ```sh
 vibator                      # run every enabled rule
-vibator --only max-lines     # comma-separated rule ids
+vibator --only tsdoc-coverage  # comma-separated rule ids
 vibator --config path.json   # explicit config file
 vibator --reporter json      # machine-readable output
 vibator --staged             # check only files staged for the next commit
@@ -317,30 +317,30 @@ For CI, and for agents acting on findings:
   "durationMs": 5720,
   "rules": [
     {
-      "ruleId": "max-lines",
-      "title": "No source file longer than the budget",
+      "ruleId": "meaningful-names",
+      "title": "Identifiers say what they hold",
       "files": 144,
       "durationMs": 34,
       "diagnostics": [
         {
           "file": "src/components/editor.tsx",
           "line": 401,
-          "message": "1091 lines exceeds the 400-line budget",
-          "expected": "At most 400 lines",
-          "fix": "Split it into focused modules, each with one reason to change",
-          "ruleId": "max-lines",
+          "message": "\"data\" is a filler name that says nothing about the value",
+          "expected": "A name stating what the value is",
+          "fix": "Rename it after what it holds, such as the entity or unit",
+          "ruleId": "meaningful-names",
           "severity": "error",
           "docs": [
             {
-              "path": "rules/max-lines.md",
-              "absolutePath": "/repo/node_modules/vibator/docs/rules/max-lines.md"
+              "path": "rules/meaningful-names.md",
+              "absolutePath": "/repo/node_modules/vibator/docs/rules/meaningful-names.md"
             },
             {
               "path": "docs/code-style.md",
               "absolutePath": "/repo/docs/code-style.md"
             }
           ],
-          "snippet": "  399 | }\n  400 |\n> 401 | export function anotherHandler() {"
+          "snippet": "  400 | }\n> 401 | const data = fetchRows();"
         }
       ]
     }

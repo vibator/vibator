@@ -30,19 +30,6 @@ No oversized files in version control.
 |---|---|---|---|
 | `maxKb` | integer | `400` | Largest accepted file, in kilobytes |
 
-## `max-lines`
-
-No source file longer than the budget.
-
-- Scope: file. Default severity: `error`
-- Default include: `**/*.{ts,tsx,js,jsx,mjs,cjs}`
-- Default exclude: `**/*.test.*`, `**/*.spec.*`, `**/*.d.ts`
-- Guideline: [rules/max-lines.md](./rules/max-lines.md)
-
-| Option | Type | Default | Purpose |
-|---|---|---|---|
-| `max` | integer | `400` | Longest a file may be, in lines |
-
 ## `banned-patterns`
 
 Project-banned patterns stay out of the source.

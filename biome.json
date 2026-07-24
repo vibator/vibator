@@ -33,6 +33,14 @@
           }
         }
       },
+      "style": {
+        "noExcessiveLinesPerFile": {
+          "level": "error",
+          "options": {
+            "maxLines": 400
+          }
+        }
+      },
       "suspicious": {
         "noConsole": {
           "level": "error",
@@ -51,6 +59,9 @@
           "complexity": {
             "noExcessiveCognitiveComplexity": "off",
             "noExcessiveLinesPerFunction": "off"
+          },
+          "style": {
+            "noExcessiveLinesPerFile": "off"
           }
         }
       }

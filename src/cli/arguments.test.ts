@@ -11,11 +11,11 @@ describe("parseArguments", () => {
   it("reads flags wherever they appear", () => {
     const parsed = parseArguments([
       "--only",
-      "max-lines,no-conflict-markers",
+      "max-file-size,no-conflict-markers",
       "--reporter",
       "json",
     ]);
-    expect(parsed.only).toEqual(["max-lines", "no-conflict-markers"]);
+    expect(parsed.only).toEqual(["max-file-size", "no-conflict-markers"]);
     expect(parsed.reporter).toBe("json");
   });
 
@@ -27,9 +27,9 @@ describe("parseArguments", () => {
   });
 
   it("carries the target of explain", () => {
-    const parsed = parseArguments(["explain", "max-lines"]);
+    const parsed = parseArguments(["explain", "max-file-size"]);
     expect(parsed.command).toBe("explain");
-    expect(parsed.target).toBe("max-lines");
+    expect(parsed.target).toBe("max-file-size");
   });
 
   it("rejects an unknown command rather than silently checking", () => {

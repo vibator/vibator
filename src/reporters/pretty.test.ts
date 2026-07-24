@@ -4,8 +4,8 @@ import { prettyReporter } from "./pretty.ts";
 
 /** A finished rule with one error-severity finding. */
 const RULE_RESULT: RuleResult = {
-  ruleId: "max-lines",
-  title: "No source file longer than the budget",
+  ruleId: "max-file-size",
+  title: "No oversized files in version control",
   files: 3,
   durationMs: 12,
   diagnostics: [
@@ -15,9 +15,9 @@ const RULE_RESULT: RuleResult = {
       message: "too long",
       expected: "shorter",
       fix: "split it",
-      ruleId: "max-lines",
+      ruleId: "max-file-size",
       severity: "error",
-      docs: [{ path: "rules/max-lines.md" }, { path: "CLAUDE.md" }],
+      docs: [{ path: "rules/max-file-size.md" }, { path: "CLAUDE.md" }],
       snippet: "> 401 | const x = 1;",
     },
   ],
@@ -76,7 +76,7 @@ describe("prettyReporter", () => {
   });
 
   it("lists every guideline path under the findings", () => {
-    expect(render(RULE_RESULT)).toContain("rules/max-lines.md, CLAUDE.md");
+    expect(render(RULE_RESULT)).toContain("rules/max-file-size.md, CLAUDE.md");
   });
 
   it("prints the closing error count", () => {

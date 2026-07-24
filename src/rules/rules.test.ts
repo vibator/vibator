@@ -1,17 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { createContext } from "../core/context.ts";
 import { maxFileSize } from "./max-file-size.ts";
-import { maxLines } from "./max-lines.ts";
 import { noConflictMarkers } from "./no-conflict-markers.ts";
 
 /** A context rooted anywhere; the file rules under test never read from disk. */
 const { context } = createContext(process.cwd());
 
 /** The file rules exercised here. */
-type FileRuleUnderTest =
-  | typeof maxLines
-  | typeof maxFileSize
-  | typeof noConflictMarkers;
+type FileRuleUnderTest = typeof maxFileSize | typeof noConflictMarkers;
 
 /**
  * Runs a file rule over literal content.
@@ -70,28 +66,6 @@ describe("no-conflict-markers", () => {
   it("skips binary content rather than reporting noise", () => {
     const binary = `a\0<<<<<<< HEAD\n`;
     expect(runFileRule(noConflictMarkers, binary, {})).toEqual([]);
-  });
-});
-
-describe("max-lines", () => {
-  it("flags a file over the budget", () => {
-    const found = runFileRule(maxLines, "x\n".repeat(11), { max: 10 });
-    expect(found).toHaveLength(1);
-    expect(found[0]?.message).toContain("11 lines");
-  });
-
-  it("accepts a file exactly at the budget", () => {
-    expect(runFileRule(maxLines, "x\n".repeat(10), { max: 10 })).toEqual([]);
-  });
-
-  it("counts a final line with no trailing newline", () => {
-    const unterminated = `${"x\n".repeat(10)}last`;
-    expect(runFileRule(maxLines, unterminated, { max: 10 })).toHaveLength(1);
-  });
-
-  it("carries the budget into the fix advice", () => {
-    const found = runFileRule(maxLines, "x\n".repeat(11), { max: 10 });
-    expect(found[0]?.expected).toContain("10 lines");
   });
 });
 

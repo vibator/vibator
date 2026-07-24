@@ -24,14 +24,6 @@
       }
     },
     "env-example-sync": "off",
-    "max-lines": {
-      "severity": "error",
-      "include": ["src/**/*.ts"],
-      "exclude": ["**/*.test.ts"],
-      "options": {
-        "max": 400
-      }
-    },
     "tsdoc-coverage": {
       "severity": "error",
       "include": ["src/**/*.ts"],
@@ -57,11 +49,6 @@
     }
   },
   "guidelines": {
-    "CLAUDE.md": [
-      "max-lines",
-      "meaningful-names",
-      "prefer-array-methods",
-      "tsdoc-coverage"
-    ]
+    "CLAUDE.md": ["meaningful-names", "prefer-array-methods", "tsdoc-coverage"]
   }
 }

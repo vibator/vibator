@@ -14,7 +14,7 @@ on `fix` without parsing prose.
 It exists because the standards an agent is given in a prompt stop being
 applied as the context grows, and because linters check syntax and type
 checkers check types. Neither catches a class of defects common in generated
-code: files that grow without limit, a translation key added to one locale
+code: a translation key added to one locale
 only, an env var read but never documented, generated files never
 regenerated, deprecated APIs that still compile. Without a runner, an agent
 enforces those with throwaway scripts.
@@ -26,7 +26,7 @@ downstream project. It was extracted from one, and it must stay generic.
 
 ```sh
 vibator                      # run every enabled rule
-vibator --only max-lines     # comma-separated rule ids
+vibator --only tsdoc-coverage  # comma-separated rule ids
 vibator --config path.json   # explicit config file
 vibator --reporter json      # machine-readable, for CI and agents
 vibator --staged             # check only files staged for the next commit
@@ -170,8 +170,8 @@ Both cost real debugging time. Both have regression tests in
 - TSDoc on every declaration, exported or not, with `@param` and `@returns`.
   The repo enforces this on itself via `tsdoc-coverage`.
 - Names carry meaning; no `data`, `res`, `tmp`.
-- Functions stay short. Files stay under 400 lines, including this
-  package's own, which is why the TSDoc analysis is split across
-  `src/rules/tsdoc/`.
+- Functions stay short and files stay under 400 lines, both enforced by
+  Biome (`noExcessiveLinesPerFile`). That budget is why the TSDoc analysis
+  is split across `src/rules/tsdoc/`.
 - Documentation and user-visible strings use plain, direct language: no
   em-dashes, no aphorisms, no marketing phrasing. See CONTRIBUTING.md.

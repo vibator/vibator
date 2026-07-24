@@ -9,7 +9,6 @@ import { codegenDrift } from "./codegen-drift.ts";
 import { envExampleSync } from "./env-example-sync.ts";
 import { localeParity } from "./locale-parity.ts";
 import { maxFileSize } from "./max-file-size.ts";
-import { maxLines } from "./max-lines.ts";
 import { meaningfulNames } from "./meaningful-names.ts";
 import { noConflictMarkers } from "./no-conflict-markers.ts";
 import { noDeadDocLinks } from "./no-dead-doc-links.ts";
@@ -26,7 +25,6 @@ import { tsdocCoverage } from "./tsdoc-coverage.ts";
 export const BUILT_IN_RULES: AnyRule[] = [
   noConflictMarkers,
   maxFileSize,
-  maxLines,
   bannedPatterns,
   noDeadDocLinks,
   localeParity,

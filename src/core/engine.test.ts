@@ -54,7 +54,7 @@ function reportingRule(id: string): AnyRule {
   return {
     id,
     title: "Reports every file",
-    docs: "rules/max-lines.md",
+    docs: "rules/max-file-size.md",
     scope: "file",
     defaultSeverity: "error",
     defaultInclude: ["**/*.ts"],
@@ -94,8 +94,8 @@ describe("run", () => {
     expect(finding?.snippet).toContain("> 1 | const one = 1;");
     // The rule points at a document this package ships, so the reference
     // resolves to an absolute path a consumer can open.
-    expect(finding?.docs[0]?.path).toBe("rules/max-lines.md");
-    expect(finding?.docs[0]?.absolutePath).toMatch(/max-lines\.md$/);
+    expect(finding?.docs[0]?.path).toBe("rules/max-file-size.md");
+    expect(finding?.docs[0]?.absolutePath).toMatch(/max-file-size\.md$/);
     expect(outcome.errors).toBe(2);
     expect(outcome.warnings).toBe(0);
   });
