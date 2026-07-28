@@ -27,14 +27,18 @@ function locationOf(finding: Finding): string {
  */
 export const pretty: Reporter = (findings) => {
   if (findings.length === 0) return "No findings.";
-  const lines = findings.map(
-    (finding) =>
+  const blocks = findings.map((finding) => {
+    const parts = [
       `${locationOf(finding)} ${finding.severity} ${finding.ruleId}  ${finding.message}`,
-  );
+    ];
+    if (finding.snippet) parts.push(finding.snippet);
+    if (finding.docs) parts.push(`guideline: ${finding.docs}`);
+    return parts.join("\n");
+  });
   const errors = findings.filter(
     (finding) => finding.severity === "error",
   ).length;
   const warnings = findings.length - errors;
-  lines.push("", `${errors} error(s), ${warnings} warning(s)`);
-  return lines.join("\n");
+  blocks.push("", `${errors} error(s), ${warnings} warning(s)`);
+  return blocks.join("\n");
 };
