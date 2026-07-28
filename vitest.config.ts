@@ -4,6 +4,8 @@ export default defineConfig({
   test: {
     environment: "node",
     globals: true,
+    include: ["src/**/*.test.ts"],
+    exclude: ["**/node_modules/**", "backup/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json-summary", "json"],

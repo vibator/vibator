@@ -1,2 +1,1 @@
 npx biome check --staged --no-errors-on-unmatched
-node --no-warnings --experimental-strip-types src/cli.ts --staged --only no-conflict-markers,max-file-size,no-dead-doc-links

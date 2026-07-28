@@ -1,9 +1,10 @@
 /**
  * Architecture boundaries. The directories are the layers:
- *   src/core       - the engine; generic, knows no rule and no reporter
- *   src/rules      - the built-in rules; feed the engine, know no reporter
- *   src/reporters  - presentation; draw from engine events only
- *   src/cli(.ts)   - the composition root; the only place allowed to know all
+ *   src/namespace     - the `vibator` object a rule reads. Bottom layer.
+ *   src/rules         - defineRule, the registry, the rule types.
+ *   src/configuration - .vibator.json types and load.
+ *   src/engine        - loadRules and run.
+ *   src/cli(.ts)      - argument parsing, subcommands, reporters. The root.
  * Run with `npm run arch`.
  *
  * @type {import('dependency-cruiser').IConfiguration}
@@ -13,42 +14,41 @@ module.exports = {
     {
       name: "no-circular",
       severity: "error",
-      comment:
-        "Circular dependencies make the graph hard to reason about/test.",
+      comment: "Circular dependencies make the graph hard to reason about.",
       from: {},
       to: { circular: true },
     },
     {
-      name: "core-stays-generic",
+      name: "namespace-is-isolated",
       severity: "error",
       comment:
-        "The engine must not know any concrete rule or reporter; rules and " +
-        "reporters plug into it, never the other way round.",
-      from: { path: "^src/core/", pathNot: "\\.test\\.ts$" },
-      to: { path: "^src/(rules|reporters|cli)" },
+        "The namespace is the bottom layer. It imports no other src module.",
+      from: { path: "^src/namespace/", pathNot: "\\.test\\.ts$" },
+      to: { path: "^src/(rules|configuration|engine|cli)" },
     },
     {
-      name: "rules-do-not-reach-out",
+      name: "rules-know-only-the-namespace",
       severity: "error",
       comment:
-        "Rules produce diagnostics; presenting them is someone else's job.",
+        "Rules read the namespace; they know no configuration, engine, or cli.",
       from: { path: "^src/rules/", pathNot: "\\.test\\.ts$" },
-      to: { path: "^src/(reporters|cli)" },
+      to: { path: "^src/(configuration|engine|cli)" },
     },
     {
-      name: "reporters-draw-from-core-only",
+      name: "nobody-imports-cli",
       severity: "error",
-      comment: "Reporters render engine events; they never consult a rule.",
-      from: { path: "^src/reporters/", pathNot: "\\.test\\.ts$" },
-      to: { path: "^src/(rules|cli)" },
+      comment:
+        "The cli is the composition root. It imports anything; nothing imports it.",
+      from: { path: "^src/", pathNot: "^src/cli" },
+      to: { path: "^src/cli/" },
     },
     {
       name: "typescript-stays-dynamic",
       severity: "error",
       comment:
         "`typescript` is an optional peer. A static value import would make " +
-        "every text-only user install it; only type-only imports and " +
-        "`await import` are allowed (see CLAUDE.md).",
+        "every text-only user install it; only type-only and dynamic loads " +
+        "are allowed.",
       from: { path: "^src/" },
       to: {
         path: "^node_modules/typescript/",
@@ -67,7 +67,6 @@ module.exports = {
   options: {
     doNotFollow: { path: "node_modules" },
     tsConfig: { fileName: "tsconfig.json" },
-    // Resolve type-only imports so the boundary rules can allow them.
     tsPreCompilationDeps: true,
     exclude: {
       path: "node_modules|^dist/|^coverage/",
