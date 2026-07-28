@@ -1,101 +1,92 @@
 # Contributing to vibator
 
-Thanks for contributing. This document is for humans; agents working in this
-repository additionally follow [CLAUDE.md](./CLAUDE.md), and the design
-invariants listed there bind all contributions. Participation is governed by
-the [Code of Conduct](./CODE_OF_CONDUCT.md).
+Thanks for contributing. This document is for humans. Agents working in this
+repository also follow [CLAUDE.md](./CLAUDE.md), and the design invariants
+listed there bind all contributions. Participation is governed by the
+[Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## Setup
 
 ```sh
 npm install
-npm run verify    # everything CI runs: lint, arch, knip, build, test, dogfood
+npm run verify    # the whole gate: lint, arch, knip, build, test
 ```
 
 `verify` runs the whole gate:
 
-| Step               | Tool                         | Checks                                                |
-|--------------------|------------------------------|-------------------------------------------------------|
-| `npm run lint`     | Biome (strict, `biome.json`) | Formatting, lint rules, complexity limits             |
-| `npm run arch`     | dependency-cruiser           | Layer boundaries, cycles, static `typescript` imports |
-| `npm run knip`     | knip                         | Dead code, unused exports and dependencies            |
-| `npm run build`    | tsc + generators             | Type errors, stale `schema.json` or rule catalog      |
-| `npm run test`     | vitest                       | Unit tests, with coverage                             |
-| `npm run vibator`  | vibator itself               | The repository's own rules, on its own source         |
+| Step            | Tool                         | Checks                                          |
+|-----------------|------------------------------|-------------------------------------------------|
+| `npm run lint`  | Biome (strict, `biome.json`) | Formatting, lint rules, complexity limits       |
+| `npm run arch`  | dependency-cruiser           | Layer boundaries, cycles, dynamic `typescript`  |
+| `npm run knip`  | knip                         | Dead code, unused exports and dependencies      |
+| `npm run build` | tsc + generate               | Type errors, stale `schema.json`                |
+| `npm run test`  | vitest                       | Unit tests, with coverage                       |
 
-Requirements: Node 22 or later (see `.nvmrc`). Any package manager works,
-but CI and the lockfile use npm. TypeScript source runs directly through
-Node's type stripping, so there is no watch step. `npm run format` applies
-Biome's formatting.
+Requirements: Node 24 or later (see `.nvmrc`). Any package manager works, but
+CI and the lockfile use npm. Node runs the TypeScript source directly through
+type stripping, so there is no build step while developing. `npm run format`
+applies Biome's formatting.
 
-`schema.json` and `docs/rule-catalog.md` are generated from the rules' own
-zod schemas by the build. Commit the regenerated files whenever you touch a
-rule's options; CI fails if they are out of sync.
+`schema.json` is generated from the configuration schema by the build. Commit
+the regenerated file when you change the configuration schema. CI fails when it
+is out of sync.
 
 ## Git hooks
 
 `npm install` installs the hooks (husky):
 
-- **pre-commit**: Biome on staged files, plus vibator's fast rules
-  (`--staged --only no-conflict-markers,max-file-size,no-dead-doc-links`)
-  on the same scope. Runs in well under a second.
-- **commit-msg**: commitlint, because the commit type determines the release
-  bump.
-- **pre-push**: the full `npm run verify`. Tests, build and the self-check
-  run once per push rather than once per commit.
+- **pre-commit**: Biome on the staged files.
+- **commit-msg**: commitlint. The commit type sets the release bump.
+- **pre-push**: the full `npm run verify`.
 
 ## Commits
 
-Conventional Commits, enforced locally and in CI. Releases are cut by
-semantic-release from the commit history, so the type you choose is the
-version bump you cause:
+Conventional Commits, enforced locally and in CI. semantic-release cuts releases
+from the commit history, so the type you choose is the version bump you cause:
 
 - `fix:` patch, `feat:` minor, `feat!:` or `BREAKING CHANGE:` major.
 - `docs:`, `chore:`, `test:`, `refactor:` produce no release.
 
 Write the subject line for the changelog reader, not the diff reader.
 
-## Adding a built-in rule
+## Changing behavior
 
-The bar for a built-in rule is higher than for a plugin: it must make sense
-in a repository that is not yours. It must be deterministic, actionable in
-one line, low on false positives, and not already covered by a formatter,
-type checker or dead-code tool. Pattern-shaped standards belong in
-`banned-patterns` options, not in new rules.
+The framework ships no rules. A rule lives in a project's `.vibator/` folder or
+a plugin package, written against the `vibator` namespace, so rule authoring is
+a task for consumers, not this repository. Contributions here change the
+namespace, the rule surface, the configuration, the engine, or the CLI.
 
-Read [docs/writing-rules.md](./docs/writing-rules.md) for the contract, and
-the design invariants in [CLAUDE.md](./CLAUDE.md): no baselines, three
-separate diagnostic fields, reads through `context`, `typescript` stays an
-optional peer loaded with `await import`.
+Read the design docs in [docs/design/](./docs/design/) before changing behavior.
+Those four files are the contract. Here is a summary of the design choices:
 
-Every rule ships with:
+- The engine is thin.
+- Rules own traversal.
+- The namespace is the only I/O.
+- The three diagnostic fields are separate.
+- `typescript` is an optional peer loaded with `await import`.
 
-- a guideline in `docs/rules/<id>.md` that answers "why is this a rule" with
-  a concrete failure, not with "consistency";
-- tests covering a violation, a non-violation, the ignore marker if the rule
-  has one, and the edge case you were tempted to skip;
-- registration in `src/rules/index.ts`, ordered by cost;
-- a row in the README rules table.
+Update the design doc in the same change as the code, if it is needed.
 
 ## Style
 
-- Biome owns formatting and general lint (cognitive complexity at most 8,
-  functions at most 25 lines, no stray `console`).
-- dependency-cruiser owns the layer boundaries: `core` knows no rule or
-  reporter, and `typescript` is only imported type-only or dynamically.
+- Biome owns formatting and lint.
+- dependency-cruiser sets the layer boundaries:
+  - `namespace` → imports no other src module
+  - `rules` → imports only the `namespace`
+  - `configuration` → reads the `namespace`
+  - `engine` → imports `namespace`, `rules`, `configuration`
+  - `cli` → the root; imports anything, nothing imports it
+  - `typescript` → type-only or dynamic import
 - knip keeps exports and dependencies in use or gone.
-- The repository checks itself with its own rules via `vibator.json`: TSDoc
-  on every declaration, files under 400 lines, meaningful names.
 
-Documentation and user-visible strings (CLI output, rule messages, `fix`
-texts) use plain, direct language: short declarative sentences, no
-em-dashes, no idioms, no marketing phrasing.
+Documentation and user-visible strings (CLI output, rule messages, `fix` texts)
+use plain, direct language.
 
-If `npm run verify` passes, the style is right. Do not argue with a check in
-a pull request; open an issue about the rule instead.
+If `npm run verify` passes, the style is right. Do not argue with a check in a
+pull request; open an issue instead.
 
 ## Pull requests
 
 Keep them scoped to one change. Fill in the template, including the local
-verification checklist. CI runs the same `verify` chain plus commit linting.
-A pull request merges with a green run and a review.
+verification checklist. CI runs the same `verify` chain plus commit linting. A
+pull request merges with a green run and a review from a main contributor.

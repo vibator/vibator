@@ -47,13 +47,13 @@ jobs:
         run: |
           npm run knip
 
-      - name: Build (tsc + generated schema and catalog)
+      - name: Build (tsc + generated schema)
         run: |
           npm run build
 
-      - name: Check generated files are committed in sync
+      - name: Check the generated schema is committed in sync
         run: |
-          git diff --exit-code schema.json docs/rule-catalog.md
+          git diff --exit-code schema.json
 
       - name: Run unit tests
         run: |
