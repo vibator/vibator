@@ -44,9 +44,30 @@ describe("run", () => {
         file: "src/a.ts",
         line: 2,
         message: "bad",
+        docs: join(dir, "demo.md"),
       },
     ]);
     expect(result.exitCode).toBe(1);
+  });
+
+  it("attaches a source snippet and guideline when the file is readable", async () => {
+    writeFileSync(
+      join(dir, "code.ts"),
+      "const a = 1;\nconst b = 2;\nconst c = 3;",
+    );
+    defineRule({
+      id: "snip",
+      title: "Snip",
+      docs: "snip.md",
+      check: () => ({
+        diagnostics: [{ file: join(dir, "code.ts"), line: 2, message: "x" }],
+      }),
+    });
+    const result = await run({ root: dir });
+    expect(result.findings[0]?.snippet).toBe(
+      "  1 | const a = 1;\n> 2 | const b = 2;\n  3 | const c = 3;",
+    );
+    expect(result.findings[0]?.docs).toBe(join(dir, "snip.md"));
   });
 
   it("passes with only warnings", async () => {

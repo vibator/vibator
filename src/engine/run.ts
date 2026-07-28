@@ -7,6 +7,7 @@
 import { relative } from "node:path";
 import { type Config, load } from "../configuration/index.ts";
 import { git } from "../namespace/git/index.ts";
+import { File } from "../namespace/project/index.ts";
 import {
   setExcludedDirectories,
   setRoot,
@@ -14,8 +15,10 @@ import {
 } from "../namespace/runtime.ts";
 import type { AnyRule } from "../rules/define-rule.ts";
 import type { Diagnostic } from "../rules/index.ts";
+import { resolveDocs } from "./docs.ts";
 import type { Finding } from "./finding.ts";
 import { loadRules } from "./load-rules.ts";
+import { snippetAround } from "./snippet.ts";
 
 /**
  * The inputs a run needs.
@@ -47,10 +50,11 @@ export interface RunResult {
   exitCode: number;
 }
 
-/** A rule's resolved severity and options. */
+/** A rule's resolved severity, options, and guideline path. */
 interface Resolved {
   severity: "error" | "warn";
   options: unknown;
+  docs: string;
 }
 
 /**
@@ -84,7 +88,9 @@ function resolveRule(rule: AnyRule, config: Config): Resolved | undefined {
   if (severity === "off") return undefined;
   const raw = (typeof entry === "object" ? entry.options : undefined) ?? {};
   const options = rule.options ? rule.options.parse(raw) : raw;
-  return { severity, options };
+  const docs =
+    (typeof entry === "object" ? entry.docs : undefined) ?? rule.docs;
+  return { severity, options, docs };
 }
 
 /**
@@ -94,6 +100,7 @@ function resolveRule(rule: AnyRule, config: Config): Resolved | undefined {
  * @param severity - The resolved severity.
  * @param diagnostic - The diagnostic to convert.
  * @param root - The absolute project root.
+ * @param docs - The absolute path of the rule's guideline.
  * @returns The finding.
  */
 function toFinding(
@@ -101,15 +108,40 @@ function toFinding(
   severity: "error" | "warn",
   diagnostic: Diagnostic,
   root: string,
+  docs: string,
 ): Finding {
   return {
     ...diagnostic,
     file: diagnostic.file
       ? relative(root, diagnostic.file).replaceAll("\\", "/")
       : undefined,
+    snippet: snippetFor(diagnostic.file, diagnostic.line, diagnostic.endLine),
     ruleId,
     severity,
+    docs,
   };
+}
+
+/**
+ * Renders the source excerpt around a finding that points at a line in a
+ * readable file.
+ *
+ * @param file - The absolute path of the finding.
+ * @param line - The start line of the finding.
+ * @param endLine - The last line, when the finding spans several.
+ * @returns The excerpt, or undefined when there is no line or the read fails.
+ */
+function snippetFor(
+  file: string | undefined,
+  line: number | undefined,
+  endLine: number | undefined,
+): string | undefined {
+  if (!file || line === undefined) return undefined;
+  try {
+    return snippetAround(new File(file).content, line, endLine);
+  } catch {
+    return undefined;
+  }
 }
 
 /**
@@ -133,8 +165,9 @@ async function runRule(
     await rule.fix(resolved.options, report);
     report = await rule.check(resolved.options);
   }
+  const guideline = resolveDocs(resolved.docs, root);
   return report.diagnostics.map((diagnostic) =>
-    toFinding(rule.id, resolved.severity, diagnostic, root),
+    toFinding(rule.id, resolved.severity, diagnostic, root, guideline),
   );
 }
 

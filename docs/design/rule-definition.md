@@ -66,8 +66,9 @@ One finding in a report.
 | Declaration | Description |
 |---|---|
 | file?: string | The absolute path of the finding; reporters display it relative to the project root. Omit it for a whole-project finding. |
-| line?: number | The 1-based line. |
-| column?: number | The 1-based column. |
+| line?: number | The start line, or the single line where the finding is. |
+| endLine?: number | The last line, when the finding spans several. |
+| column?: number | The column where the finding starts. |
 | message: string | What the finding reports as wrong. |
 | expected?: string | The standard the rule requires. |
 | fix?: string | The concrete next action that resolves it. |

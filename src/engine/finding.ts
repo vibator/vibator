@@ -13,4 +13,8 @@ export interface Finding extends Diagnostic {
   ruleId: string;
   /** The resolved severity of the finding. */
   severity: "error" | "warn";
+  /** The source excerpt around the finding, rendered by the framework. */
+  snippet?: string;
+  /** The absolute path of the rule's guideline. */
+  docs?: string;
 }

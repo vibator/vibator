@@ -13,9 +13,11 @@ export interface Diagnostic {
    * project root. Omit it for a whole-project finding.
    */
   file?: string;
-  /** The 1-based line. */
+  /** The start line, or the single line where the finding is. */
   line?: number;
-  /** The 1-based column. */
+  /** The last line, when the finding spans several. */
+  endLine?: number;
+  /** The column where the finding starts. */
   column?: number;
   /** What the finding reports as wrong. */
   message: string;

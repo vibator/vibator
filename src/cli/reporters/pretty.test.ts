@@ -32,4 +32,20 @@ describe("pretty", () => {
   it("reports when there are no findings", () => {
     expect(pretty([])).toMatch(/no findings/i);
   });
+
+  it("shows the snippet and guideline under a finding", () => {
+    const output = pretty([
+      {
+        ruleId: "demo",
+        severity: "error",
+        file: "src/a.ts",
+        line: 2,
+        message: "bad",
+        snippet: "  1 | a\n> 2 | b",
+        docs: "/abs/demo.md",
+      },
+    ]);
+    expect(output).toContain("  1 | a\n> 2 | b");
+    expect(output).toContain("guideline: /abs/demo.md");
+  });
 });

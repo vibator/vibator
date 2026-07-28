@@ -4,10 +4,10 @@
  * @packageDocumentation
  */
 import { cpSync, existsSync, readFileSync, writeFileSync } from "node:fs";
-import { createRequire } from "node:module";
-import { dirname, join, resolve } from "node:path";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { type Config, load } from "../../configuration/index.ts";
+import { resolveDocs } from "../../engine/docs.ts";
 import { loadRules } from "../../engine/load-rules.ts";
 import { setRoot } from "../../namespace/runtime.ts";
 import type { AnyRule } from "../../rules/define-rule.ts";
@@ -56,24 +56,6 @@ export async function list(root: string = process.cwd()): Promise<string> {
         `${severityOf(rule, config).padEnd(5)} ${rule.id}  ${rule.title}`,
     )
     .join("\n");
-}
-
-/**
- * Resolves a rule's docs path against the root, or a package when prefixed.
- *
- * @param docs - The docs value from the rule.
- * @param root - The absolute project root.
- * @returns The absolute path of the guideline.
- */
-function resolveDocs(docs: string, root: string): string {
-  const packaged = docs.match(/^([^:/\\]+):(.+)$/);
-  if (packaged) {
-    const packagePath = createRequire(import.meta.url).resolve(
-      `${packaged[1]}/package.json`,
-    );
-    return join(dirname(packagePath), packaged[2] ?? "");
-  }
-  return resolve(root, docs);
 }
 
 /**
