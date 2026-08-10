@@ -50,7 +50,8 @@ The override one rule accepts.
 
 A `docs` value resolves from the project root, such as
 `.vibator/docs/my-rule.md`, or from a package when prefixed with the package
-name, such as `vibator:docs/rules/no-deprecated-apis.md`.
+name, such as `vibator:docs/rules/no-deprecated-apis.md`. Scoped names work
+the same: `@vibator/biome:docs/rules/biome.md`.
 
 ## Loading
 
