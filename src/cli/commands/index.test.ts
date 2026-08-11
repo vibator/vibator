@@ -25,14 +25,14 @@ describe("list", () => {
     defineRule({
       id: "b-rule",
       title: "B rule",
-      docs: "b.md",
+      docs: "./b.md",
       severity: "warn",
       check: () => ({ diagnostics: [] }),
     });
     defineRule({
       id: "a-rule",
       title: "A rule",
-      docs: "a.md",
+      docs: "./a.md",
       check: () => ({ diagnostics: [] }),
     });
     const output = await list(dir);
@@ -49,7 +49,7 @@ describe("explain", () => {
     defineRule({
       id: "documented",
       title: "Documented",
-      docs: "guide.md",
+      docs: "./guide.md",
       check: () => ({ diagnostics: [] }),
     });
     expect(await explain("documented", dir)).toContain("The guideline");

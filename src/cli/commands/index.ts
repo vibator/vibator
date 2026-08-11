@@ -7,8 +7,8 @@ import { cpSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { type Config, load } from "../../configuration/index.ts";
-import { resolveDocs } from "../../engine/docs.ts";
 import { loadRules } from "../../engine/load-rules.ts";
+import { module } from "../../namespace/module/index.ts";
 import { setRoot } from "../../namespace/runtime.ts";
 import type { AnyRule } from "../../rules/define-rule.ts";
 import type { Severity } from "../../rules/index.ts";
@@ -75,7 +75,10 @@ export async function explain(
   if (!found) {
     throw new Error(`No such rule: ${rule}`);
   }
-  return readFileSync(resolveDocs(found.docs, root), "utf8");
+  return readFileSync(
+    module.resolve(found.docs, join(root, "package.json")),
+    "utf8",
+  );
 }
 
 /** The starter configuration `init` writes. */

@@ -49,7 +49,7 @@ describe("main", () => {
     defineRule({
       id: "boomer",
       title: "Boomer",
-      docs: "b.md",
+      docs: "./b.md",
       check: () => ({ diagnostics: [{ message: "kapow" }] }),
     });
     const { output, code } = await capture(process.stdout, () => main([]));
