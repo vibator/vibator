@@ -117,11 +117,20 @@ Parse and manage `package.json` files.
 
 ## module
 
-Resolve module specifiers to files.
+Resolve module references and specifiers to files.
 
 | Declaration | Description |
 |---|---|
-| resolve(specifier: string, from?: string): string | Resolves a path or package name to an absolute file path, relative to `from`. |
+| resolve(specifier: string, from?: string): string | Resolves a reference to an absolute file path, from `from`. |
+
+The four reference forms, in resolution order:
+
+| Form | Example | Meaning |
+|---|---|---|
+| Absolute path | `/abs/biome.json` | The path as it is. |
+| `package:path` | `@vibator/gate:biome.base.json` | The file inside the installed package, ignoring its `exports` map. |
+| Starts with `.` | `./biome.json`, `.vibator/biome.json` | A local file, joined onto the directory of `from`. |
+| Anything else | `zod`, `@vibator/gate/biome` | A package specifier resolved by Node, honoring the `exports` map. |
 
 ## glob
 

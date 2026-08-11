@@ -29,7 +29,7 @@ describe("run", () => {
     defineRule({
       id: "demo",
       title: "Demo",
-      docs: "demo.md",
+      docs: "./demo.md",
       check: () => ({
         diagnostics: [
           { file: join(dir, "src", "a.ts"), line: 2, message: "bad" },
@@ -58,7 +58,7 @@ describe("run", () => {
     defineRule({
       id: "snip",
       title: "Snip",
-      docs: "snip.md",
+      docs: "./snip.md",
       check: () => ({
         diagnostics: [{ file: join(dir, "code.ts"), line: 2, message: "x" }],
       }),
@@ -74,7 +74,7 @@ describe("run", () => {
     defineRule({
       id: "warned",
       title: "Warned",
-      docs: "w.md",
+      docs: "./w.md",
       severity: "warn",
       check: () => ({ diagnostics: [{ message: "meh" }] }),
     });
@@ -94,7 +94,7 @@ describe("run", () => {
     defineRule({
       id: "silent",
       title: "Silent",
-      docs: "s.md",
+      docs: "./s.md",
       check: () => ({ diagnostics: [{ message: "x" }] }),
     });
     const result = await run({ root: dir });
@@ -106,13 +106,13 @@ describe("run", () => {
     defineRule({
       id: "a",
       title: "A",
-      docs: "a.md",
+      docs: "./a.md",
       check: () => ({ diagnostics: [{ message: "A" }] }),
     });
     defineRule({
       id: "b",
       title: "B",
-      docs: "b.md",
+      docs: "./b.md",
       check: () => ({ diagnostics: [{ message: "B" }] }),
     });
     const result = await run({ root: dir, only: ["a"] });
@@ -124,7 +124,7 @@ describe("run", () => {
     defineRule({
       id: "fixable",
       title: "Fixable",
-      docs: "f.md",
+      docs: "./f.md",
       check: () => ({ diagnostics: fixed ? [] : [{ message: "fixme" }] }),
       fix: () => {
         fixed = true;
@@ -138,7 +138,7 @@ describe("run", () => {
     defineRule({
       id: "boom",
       title: "Boom",
-      docs: "b.md",
+      docs: "./b.md",
       check: () => {
         throw new Error("kaboom");
       },
@@ -172,7 +172,7 @@ describe("run scope", () => {
     defineRule({
       id: "per-file",
       title: "Per file",
-      docs: "p.md",
+      docs: "./p.md",
       check: () => ({
         diagnostics: project.files.map((file) => ({
           file: file.path,

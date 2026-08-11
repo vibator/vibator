@@ -4,9 +4,10 @@
  *
  * @packageDocumentation
  */
-import { relative } from "node:path";
+import { join, relative } from "node:path";
 import { type Config, load } from "../configuration/index.ts";
 import { git } from "../namespace/git/index.ts";
+import { module } from "../namespace/module/index.ts";
 import { File } from "../namespace/project/index.ts";
 import {
   setExcludedDirectories,
@@ -15,7 +16,6 @@ import {
 } from "../namespace/runtime.ts";
 import type { AnyRule } from "../rules/define-rule.ts";
 import type { Diagnostic } from "../rules/index.ts";
-import { resolveDocs } from "./docs.ts";
 import type { Finding } from "./finding.ts";
 import { loadRules } from "./load-rules.ts";
 import { snippetAround } from "./snippet.ts";
@@ -165,7 +165,7 @@ async function runRule(
     await rule.fix(resolved.options, report);
     report = await rule.check(resolved.options);
   }
-  const guideline = resolveDocs(resolved.docs, root);
+  const guideline = module.resolve(resolved.docs, join(root, "package.json"));
   return report.diagnostics.map((diagnostic) =>
     toFinding(rule.id, resolved.severity, diagnostic, root, guideline),
   );
