@@ -55,7 +55,7 @@
     "test": "vitest run --coverage",
     "verify": "npm run lint && npm run arch && npm run knip && npm run build && npm run test",
     "generate": "node scripts/generate-schema.ts",
-    "prepublishOnly": "npm run build"
+    "prepack": "npm run build"
   },
   "dependencies": {
     "zod": "^4.4.3"

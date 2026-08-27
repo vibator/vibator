@@ -40,16 +40,11 @@ jobs:
           HUSKY: "0"
         run: npm ci
 
-      - name: Build the package that will be published
-        run: npm run build
-
       - name: Verify the gates one last time
-        run: |
-          npm run lint
-          npm run arch
-          npm run knip
-          npm run test
-          node dist/cli.js
+        run: npm run verify
+
+      - name: Vibator on its own source
+        run: node dist/cli.js
 
       - name: Semantic Release (version commit + tag + Release + npm via OIDC)
         env:

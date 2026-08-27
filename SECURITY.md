@@ -8,8 +8,12 @@ the _main_ branch) with security updates.
 ## Reporting a Vulnerability
 
 If you think you have found a vulnerability, please report it responsibly.
-Do not create a GitHub issue for a security problem. Instead, send an email
-to contact@vibator.dev and we will look into it as soon as we can.
+Do not create a GitHub issue for a security problem. Instead, use one of
+these channels and we will look into it as soon as we can:
+
+- [Report a vulnerability](https://github.com/vibator/vibator/security/advisories/new)
+  privately on GitHub. This is the preferred channel.
+- Send an email to contact@vibator.dev.
 
 We appreciate any responsible disclosure of vulnerabilities that might impact
 the integrity of our users and their projects. We do not offer bounties, but
