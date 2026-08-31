@@ -9,6 +9,7 @@ import { parseArgs } from "node:util";
 import { run as runEngine } from "../engine/run.ts";
 import { explain, init, list, skills } from "./commands/index.ts";
 import { json, pretty, type Reporter, sarif } from "./reporters/index.ts";
+import { spinner } from "./spinner.ts";
 
 /**
  * The options the default command accepts.
@@ -60,6 +61,7 @@ async function runCommand(options: RunOptions): Promise<number> {
     staged: options.staged,
     changed: options.changed,
     since: options.since,
+    onProgress: spinner(),
   });
   const reporter = reporters[options.reporter ?? "pretty"] ?? pretty;
   process.stdout.write(`${reporter(result.findings)}\n`);

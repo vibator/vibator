@@ -38,7 +38,36 @@ export interface RunInput {
   changed?: boolean;
   /** Scope the run to changes since a ref. */
   since?: string;
+  /** Receives an event when a rule starts and when it finishes. */
+  onProgress?: (event: ProgressEvent) => void;
 }
+
+/**
+ * One step of a run, for a progress display.
+ */
+export type ProgressEvent =
+  | {
+      /** A rule is about to run. */
+      type: "start";
+      /** The id of the rule. */
+      ruleId: string;
+      /** The zero-based position of the rule among those that run. */
+      index: number;
+      /** The number of rules that run. */
+      total: number;
+    }
+  | {
+      /** A rule finished, with findings or a crash finding. */
+      type: "done";
+      /** The id of the rule. */
+      ruleId: string;
+      /** The zero-based position of the rule among those that run. */
+      index: number;
+      /** The number of rules that run. */
+      total: number;
+      /** The number of findings the rule produced. */
+      findings: number;
+    };
 
 /**
  * The outcome of a run.
@@ -203,6 +232,44 @@ async function findingsFor(
 }
 
 /**
+ * Runs the rules in order, reporting progress, and collects their findings.
+ *
+ * @param rules - The rules to run.
+ * @param config - The loaded configuration.
+ * @param root - The absolute project root.
+ * @param input - The run inputs.
+ * @returns Every finding the rules produced.
+ */
+async function runRules(
+  rules: AnyRule[],
+  config: Config,
+  root: string,
+  input: RunInput,
+): Promise<Finding[]> {
+  const findings: Finding[] = [];
+  const total = rules.length;
+  for (const [index, rule] of rules.entries()) {
+    const ruleId = rule.id;
+    input.onProgress?.({ type: "start", ruleId, index, total });
+    const produced = await findingsFor(
+      rule,
+      config,
+      root,
+      input.write ?? false,
+    );
+    findings.push(...produced);
+    input.onProgress?.({
+      type: "done",
+      ruleId,
+      index,
+      total,
+      findings: produced.length,
+    });
+  }
+  return findings;
+}
+
+/**
  * Runs every enabled rule, applies fixes under `write`, and collects findings.
  *
  * @remarks Sets the project root and scope on the namespace runtime, so the
@@ -216,16 +283,10 @@ export async function run(input: RunInput): Promise<RunResult> {
   setScope(scopeFor(input));
   const config = load(input.config);
   if (config.exclude) setExcludedDirectories(config.exclude);
-  const rules = await loadRules(config);
-
-  const findings: Finding[] = [];
-  for (const rule of rules) {
-    if (input.only && !input.only.includes(rule.id)) continue;
-    findings.push(
-      ...(await findingsFor(rule, config, root, input.write ?? false)),
-    );
-  }
-
+  const rules = (await loadRules(config)).filter(
+    (rule) => !input.only || input.only.includes(rule.id),
+  );
+  const findings = await runRules(rules, config, root, input);
   const exitCode = findings.some((finding) => finding.severity === "error")
     ? 1
     : 0;

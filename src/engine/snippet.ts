@@ -26,8 +26,11 @@ function clip(line: string, max: number): string {
  * @param endLine - The 1-based last line of the finding; defaults to `line`.
  * @param context - The number of lines shown on each side of the range.
  * @param maxLineLength - The longest line printed before it is clipped.
+ * @param maxRange - The longest range excerpted. A finding that spans more
+ * lines, or spans the whole file, points at no particular line, so it gets no
+ * excerpt.
  * @returns The excerpt with the finding's lines marked, or undefined when the
- * start line falls outside the file.
+ * start line falls outside the file or the range is too wide to excerpt.
  */
 export function snippetAround(
   text: string,
@@ -35,6 +38,7 @@ export function snippetAround(
   endLine: number = line,
   context: number = 2,
   maxLineLength: number = 200,
+  maxRange: number = 20,
 ): string | undefined {
   const lines = text.split("\n");
   // A trailing newline leaves a phantom empty final line; showing it would
@@ -43,6 +47,8 @@ export function snippetAround(
   if (line < 1 || line > lines.length) return undefined;
 
   const last = Math.max(line, endLine);
+  const span = last - line + 1;
+  if (span > maxRange || (span > 1 && span >= lines.length)) return undefined;
   const first = Math.max(1, line - context);
   const past = Math.min(lines.length, last + context);
   const width = String(past).length;

@@ -35,3 +35,26 @@ describe("snippetAround", () => {
     expect(rendered).toBe(`> 1 | ${"x".repeat(200)}…`);
   });
 });
+
+describe("snippetAround, wide ranges", () => {
+  const lines = Array.from({ length: 30 }, (_, i) => `line ${i + 1}`).join(
+    "\n",
+  );
+
+  it("returns undefined when the range covers the whole file", () => {
+    expect(snippetAround("a\nb\nc\n", 1, 3)).toBeUndefined();
+    expect(snippetAround("a\nb\nc", 1, 3)).toBeUndefined();
+  });
+
+  it("returns undefined when the range exceeds the range cap", () => {
+    expect(snippetAround(lines, 2, 25)).toBeUndefined();
+  });
+
+  it("keeps a range within the cap", () => {
+    expect(snippetAround(lines, 2, 21)).toContain("> 21 | line 21");
+  });
+
+  it("honors a custom range cap", () => {
+    expect(snippetAround(lines, 2, 6, 2, 200, 3)).toBeUndefined();
+  });
+});

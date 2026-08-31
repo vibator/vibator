@@ -191,3 +191,63 @@ describe("run scope", () => {
     ]);
   });
 });
+
+describe("run, progress", () => {
+  let dir: string;
+
+  beforeEach(() => {
+    resetRules();
+    dir = mkdtempSync(join(tmpdir(), "vibator-run-"));
+  });
+
+  afterEach(() => rmSync(dir, { recursive: true, force: true }));
+
+  it("reports each rule starting and finishing, with its finding count", async () => {
+    defineRule({
+      id: "first",
+      title: "First",
+      docs: "./f.md",
+      check: () => ({ diagnostics: [{ message: "a" }, { message: "b" }] }),
+    });
+    defineRule({
+      id: "second",
+      title: "Second",
+      docs: "./s.md",
+      severity: "off",
+      check: () => ({ diagnostics: [] }),
+    });
+    const events: unknown[] = [];
+    await run({ root: dir, onProgress: (event) => events.push(event) });
+    expect(events).toEqual([
+      { type: "start", ruleId: "first", index: 0, total: 2 },
+      { type: "done", ruleId: "first", index: 0, total: 2, findings: 2 },
+      { type: "start", ruleId: "second", index: 1, total: 2 },
+      { type: "done", ruleId: "second", index: 1, total: 2, findings: 0 },
+    ]);
+  });
+
+  it("counts only the selected rules under only", async () => {
+    defineRule({
+      id: "kept",
+      title: "Kept",
+      docs: "./k.md",
+      check: () => ({ diagnostics: [] }),
+    });
+    defineRule({
+      id: "skipped",
+      title: "Skipped",
+      docs: "./s.md",
+      check: () => ({ diagnostics: [] }),
+    });
+    const events: unknown[] = [];
+    await run({
+      root: dir,
+      only: ["kept"],
+      onProgress: (event) => events.push(event),
+    });
+    expect(events).toEqual([
+      { type: "start", ruleId: "kept", index: 0, total: 1 },
+      { type: "done", ruleId: "kept", index: 0, total: 1, findings: 0 },
+    ]);
+  });
+});
