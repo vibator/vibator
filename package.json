@@ -1,6 +1,6 @@
 {
   "name": "vibator",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Unopinionated linter for JavaScript and TypeScript: write custom rules for your own standards.",
   "type": "module",
   "license": "MIT",
