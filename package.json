@@ -74,7 +74,7 @@
     "@commitlint/config-conventional": "^21.2.0",
     "@types/node": "^22.20.1",
     "@types/sarif": "^2.1.7",
-    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/coverage-v8": "^5.0.0",
     "dependency-cruiser": "^18.1.0",
     "husky": "^9.1.7",
     "knip": "^6.29.0",
