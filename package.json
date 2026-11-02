@@ -35,6 +35,13 @@
     "./skills/*": "./skills/*",
     "./package.json": "./package.json"
   },
+  "typesVersions": {
+    "*": {
+      "testing": [
+        "./dist/testing/index.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist",
     "docs",
