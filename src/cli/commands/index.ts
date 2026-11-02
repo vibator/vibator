@@ -3,8 +3,14 @@
  *
  * @packageDocumentation
  */
-import { cpSync, existsSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
+import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { type Config, load } from "../../configuration/index.ts";
 import { loadRules } from "../../engine/load-rules.ts";
@@ -75,32 +81,50 @@ export async function explain(
   if (!found) {
     throw new Error(`No such rule: ${rule}`);
   }
+  if (!found.docs) {
+    return `${found.id}: ${found.title}\nThe rule has no guideline.`;
+  }
   return readFileSync(
     module.resolve(found.docs, join(root, "package.json")),
     "utf8",
   );
 }
 
-/** The starter configuration `init` writes. */
-const STARTER: Config = {
-  $schema: "./node_modules/vibator/schema.json",
-  rules: {},
-};
+/** The starter rule `init` writes. It works in any project. */
+const STARTER_RULE = `import { defineRule, vibator } from "vibator";
+
+export default defineRule({
+  id: "no-conflict-markers",
+  title: "Files carry no merge conflict markers",
+  check: () =>
+    vibator.text
+      .search(
+        vibator.project.files.filter((file) => !vibator.text.binary(file)),
+        /^(<{7}|>{7}) /m,
+      )
+      .map((hit) => ({
+        ...hit,
+        message: "Merge conflict marker",
+        fix: "Resolve the conflict and delete the marker line.",
+      })),
+});
+`;
 
 /**
- * Writes a starter `.vibator.json`.
+ * Writes a starter rule into `.vibator/`.
  *
  * @param root - The absolute project root. Defaults to the working directory.
- * @returns A confirmation message.
- * @throws When a `.vibator.json` already exists.
+ * @returns A confirmation message with the rule's root-relative path.
+ * @throws When the starter rule already exists.
  */
 export function init(root: string = process.cwd()): string {
-  const path = join(root, ".vibator.json");
+  const path = join(root, ".vibator", "no-conflict-markers.ts");
   if (existsSync(path)) {
     throw new Error(`${path} already exists`);
   }
-  writeFileSync(path, `${JSON.stringify(STARTER, null, 2)}\n`);
-  return `Wrote ${path}`;
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, STARTER_RULE);
+  return `Wrote ${relative(root, path)}`;
 }
 
 /**

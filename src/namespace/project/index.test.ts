@@ -55,6 +55,24 @@ describe("project with a git repository", () => {
     ]);
   });
 
+  it("iterates the files with for...of", () => {
+    const names: string[] = [];
+    for (const file of project.files.match("src/**")) names.push(file.name);
+    expect(names.sort()).toEqual(["c.ts", "e.ts"]);
+  });
+
+  it("reports whether a path exists, ignored files included", () => {
+    expect(project.exists(join(dir, "a.ts"))).toBe(true);
+    expect(project.exists(join(dir, "ignoreme.log"))).toBe(true);
+    expect(project.exists(join(dir, "missing.ts"))).toBe(false);
+  });
+
+  it("flat-maps the files", () => {
+    expect(
+      project.files.match("src/**").flatMap((file) => [file.name, file.ext]),
+    ).toEqual(["c.ts", ".ts", "e.ts", ".ts"]);
+  });
+
   it("counts the files", () => {
     expect(project.files.length).toBe(6);
   });

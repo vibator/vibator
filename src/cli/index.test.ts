@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import { defineRule, resetRules } from "../rules/define-rule.ts";
 import { main } from "./index.ts";
+import { spinner } from "./spinner.ts";
+
+vi.mock("./spinner.ts", () => ({ spinner: vi.fn(() => () => undefined) }));
 
 /** Captures what a stream write receives while `run` executes. */
 async function capture(
@@ -56,5 +59,14 @@ describe("main", () => {
     expect(code).toBe(1);
     expect(output).toContain("boomer");
     expect(output).toContain("kapow");
+  });
+
+  it("draws no spinner with --no-progress", async () => {
+    resetRules();
+    vi.mocked(spinner).mockClear();
+    await capture(process.stdout, () => main(["--no-progress"]));
+    expect(spinner).not.toHaveBeenCalled();
+    await capture(process.stdout, () => main([]));
+    expect(spinner).toHaveBeenCalledTimes(1);
   });
 });

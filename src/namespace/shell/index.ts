@@ -39,10 +39,11 @@ export const shell = {
    * Runs a command and returns its outcome.
    *
    * @param command - The command to run.
-   * @param options - The working directory and timeout.
+   * @param options - The working directory and timeout. Defaults to the root
+   * and no timeout.
    * @returns The outcome of the command.
    */
-  run(command: string, options: ShellOptions): ShellResult {
+  run(command: string, options: ShellOptions = {}): ShellResult {
     const root = requireRoot();
     const result = spawnSync(command, {
       cwd: options.cwd ? join(root, options.cwd) : root,

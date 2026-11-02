@@ -58,6 +58,20 @@ describe("spinner", () => {
     expect(spawned).toBe(0);
   });
 
+  it("does nothing on a terminal that sets TERM=dumb", () => {
+    let spawned = 0;
+    const report = spinner(
+      fakeStream(true),
+      () => {
+        spawned += 1;
+        return fakePort().port;
+      },
+      { TERM: "dumb" },
+    );
+    report({ type: "start", ruleId: "a", index: 0, total: 1 });
+    expect(spawned).toBe(0);
+  });
+
   it("posts a spin with the position and rule, then a clear", () => {
     const { port, messages } = fakePort();
     const report = spinner(fakeStream(true), () => port);

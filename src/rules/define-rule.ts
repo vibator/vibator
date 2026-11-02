@@ -4,11 +4,12 @@
  * @packageDocumentation
  */
 import type { ZodType } from "zod";
+import type { Diagnostic } from "./diagnostic.ts";
 import type { Report } from "./report.ts";
 import type { Severity } from "./severity.ts";
 
 /**
- * The shape of a rule. `id`, `title`, and `docs` are required; the rest carry
+ * The shape of a rule. `id`, `title`, and `check` are required; the rest carry
  * defaults.
  *
  * @typeParam Options - The type inferred from the `options` schema. A rule that
@@ -21,21 +22,23 @@ export interface Rule<Options = unknown> {
   title: string;
   /**
    * The path to the guideline. It resolves from the project root, such as
-   * `.vibator/docs/my-rule.md`, or from a package when prefixed with the package
-   * name, such as `vibator:docs/rules/no-deprecated-apis.md`.
+   * `.vibator/docs/my-rule.md`. A rule from a plugin passes an absolute path.
    */
-  docs: string;
+  docs?: string;
   /** The default severity. The framework applies `"error"` by default. */
   severity?: Severity;
   /** The schema that validates and defaults the rule's config block. */
   options?: ZodType<Options>;
   /**
-   * Runs the rule across the files it chooses and returns a report.
+   * Runs the rule across the files it chooses and returns its findings, as a
+   * report or as the bare list of diagnostics.
    *
    * @param options - The validated options.
-   * @returns The report of findings.
+   * @returns The findings.
    */
-  check(options: Options): Report | Promise<Report>;
+  check(
+    options: Options,
+  ): Report | Diagnostic[] | Promise<Report | Diagnostic[]>;
   /**
    * Corrects the findings in a report. The framework calls it under `--write`.
    *

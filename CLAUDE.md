@@ -1,27 +1,34 @@
 # vibator
 
-A quality gate for coding agents. Configurable, glob-scoped rules over
-JavaScript and TypeScript projects.
+Project rules instead of check scripts. A small framework for the checks a
+project's linters do not cover, over JavaScript and TypeScript projects.
 
 Read `docs/design/` before changing behavior. Those four files are the contract:
 `vibator-namespace.md`, `rule-definition.md`, `configuration.md`,
 `command-line.md`. Update the design doc in the same change as the code.
 
+`docs/guide/` holds the guides that vibator.dev publishes for each release.
+Update a guide in the same change when its examples or commands change. Links
+between docs are relative Markdown links, such as `../design/configuration.md`.
+
 ## Layout
 
 ```
 src/
-  namespace/      the `vibator` object a rule reads: project, ts, json, object,
-                  text, ignore, git, shell, package, module. Plus runtime state
+  namespace/      the `vibator` object a rule reads: project, ts, json, text,
+                  ignore, git, shell, package, module, glob. Plus runtime state
                   (root, excludes, scope) and discovery.
-  rules/          defineRule and the registry, Rule/Report/Diagnostic/Severity,
-                  the scope options fragment, the built-in rules.
-  configuration/  .vibator.json types, the schema, and load (with extends).
+  rules/          defineRule and the registry, Rule/Report/Diagnostic/Severity.
+                  The package ships no rules.
+  configuration/  .vibator.json types, the schema, and load.
   engine/         loadRules and run (the check → fix → check loop). Thin.
   cli/            argument parsing, subcommands, reporters. Calls the engine.
+  testing/        runRule, exported as `vibator/testing`.
   cli.ts          the binary.
   index.ts        the public surface.
+.vibator/         the rules vibator runs on itself, against the build.
 docs/design/      the reference docs.
+docs/guide/       the guides, numbered in reading order.
 scripts/          build tooling, run through package.json.
 ```
 
@@ -35,6 +42,9 @@ export.
 npx vitest run                        # the tests
 npx tsc --noEmit -p tsconfig.json     # the types
 npm run generate                      # regenerate schema.json from configSchema
+npm run self                          # run this repo's own rules (after build)
+npm run docs:format                   # format the Markdown with remark
+npm run package                       # publint and attw on the packed package
 ```
 
 Work test-first, one module at a time: write the test, run it red, write the

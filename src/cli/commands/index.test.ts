@@ -55,21 +55,37 @@ describe("explain", () => {
     expect(await explain("documented", dir)).toContain("The guideline");
   });
 
+  it("says when a rule has no guideline", async () => {
+    defineRule({
+      id: "undocumented",
+      title: "Undocumented",
+      check: () => [],
+    });
+    expect(await explain("undocumented", dir)).toBe(
+      "undocumented: Undocumented\nThe rule has no guideline.",
+    );
+  });
+
   it("throws for an unknown rule", async () => {
     await expect(explain("nope", dir)).rejects.toThrow(/no such rule/i);
   });
 });
 
 describe("init", () => {
-  it("writes a starter config", () => {
-    expect(init(dir)).toContain(".vibator.json");
-    const written = JSON.parse(
-      readFileSync(join(dir, ".vibator.json"), "utf8"),
-    );
-    expect(written).toHaveProperty("rules");
+  it("writes a starter rule into .vibator/", () => {
+    const path = join(dir, ".vibator", "no-conflict-markers.ts");
+    expect(init(dir)).toBe("Wrote .vibator/no-conflict-markers.ts");
+    const source = readFileSync(path, "utf8");
+    expect(source).toContain('id: "no-conflict-markers"');
+    expect(source).toContain(".search(");
   });
 
-  it("refuses to overwrite an existing config", () => {
+  it("writes no configuration file", () => {
+    init(dir);
+    expect(existsSync(join(dir, ".vibator.json"))).toBe(false);
+  });
+
+  it("refuses to overwrite an existing rule", () => {
     init(dir);
     expect(() => init(dir)).toThrow(/already exists/i);
   });

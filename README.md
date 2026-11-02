@@ -1,77 +1,107 @@
-<div align="center">
-  <h1>Vibator</h1>
-  <img src="https://raw.githubusercontent.com/vibator/vibator/main/assets/logo.svg" alt="Vibator Logo" width="128" height="128">
+<h1>
+  <img src="https://raw.githubusercontent.com/vibator/vibator/main/assets/logo.svg" width="44" height="44" align="absmiddle" alt="">
+  vibator
+</h1>
 
 [![Quality](https://github.com/vibator/vibator/actions/workflows/quality.yml/badge.svg)](https://github.com/vibator/vibator/actions/workflows/quality.yml)
 [![npm version](https://img.shields.io/npm/v/vibator)](https://www.npmjs.com/package/vibator)
 [![node](https://img.shields.io/node/v/vibator)](https://nodejs.org)
 [![license: MIT](https://img.shields.io/npm/l/vibator)](./LICENSE)
-</div>
 
-Vibator is an unopinionated linter for JavaScript and TypeScript that lets you
-write custom rules for your own standards. Every finding links back to the
-guideline that defines the standard, and the package ships with skills that hold
-coding agents to those standards through actionable alerts.
+Project rules instead of check scripts.
+
+Coding agents write a new `scripts/check-*.mjs` each time a project needs a
+check that no linter provides. vibator gives those checks one home: a rule is
+one file in `.vibator/`, and `npx vibator` runs them all.
+
+If a tool you already use has a rule for a check, configure that tool. vibator
+runs the checks that only your project has.
+
+## A rule
+
+```ts
+// .vibator/colors-from-tokens.ts
+import { defineRule, vibator } from "vibator";
+
+export default defineRule({
+  id: "colors-from-tokens",
+  title: "CSS colors come from tokens.css",
+  check: () =>
+    vibator.text
+      .search(
+        vibator.project.files.match(["src/**/*.css", "!src/styles/tokens.css"]),
+        /#[0-9a-f]{3,8}\b/i,
+      )
+      .map((hit) => ({
+        ...hit,
+        message: `Hardcoded color ${hit.text}`,
+        fix: "Use a variable from tokens.css",
+      })),
+});
+```
+
+```text
+$ npx vibator
+src/components/card.css:11:23 error colors-from-tokens  Hardcoded color #f97316
+```
+
+A rule reads the project through the `vibator` namespace: files, text, JSON,
+TypeScript syntax trees, `package.json`, git, and the shell. Each finding keeps
+three fields apart: `message` (what is wrong), `expected` (the standard), and
+`fix` (the next action), so an agent can act on it.
 
 ## Install
 
 ```sh
-npm install -D vibator
+npm install --save-dev vibator
+npx vibator init     # writes a starter rule into .vibator/
+npx vibator
 ```
 
-Run `npx vibator init` to scaffold a `.vibator.json` and start customizing.
-Vibator requires Node 24 or later.
+vibator requires Node 24 or later.
 
-## Design
+## Test a rule
 
-The design docs are the reference and the contract.
+```ts
+import { runRule } from "vibator/testing";
+import rule from "../.vibator/colors-from-tokens.ts";
 
-| Document                                                   | Covers                                             |
-|------------------------------------------------------------|----------------------------------------------------|
-| [vibator-namespace.md](./docs/design/vibator-namespace.md) | The `vibator` namespace a rule reads from          |
-| [rule-definition.md](./docs/design/rule-definition.md)     | `defineRule`, the rule shape, and the return types |
-| [configuration.md](./docs/design/configuration.md)         | `.vibator.json` fields and rule loading            |
-| [command-line.md](./docs/design/command-line.md)           | The command, its flags, and the subcommands        |
+const findings = await runRule(rule, {
+  files: { "src/card.css": "a { color: #fff; }" },
+});
+```
+
+## Docs
+
+The guides are in [docs/guide](./docs/guide), and the site
+[vibator.dev](https://vibator.dev) publishes them. The design docs are the
+reference and the contract.
+
+| Document                                                   | Covers                                      |
+| ---------------------------------------------------------- | ------------------------------------------- |
+| [vibator-namespace.md](./docs/design/vibator-namespace.md) | The `vibator` namespace a rule reads from   |
+| [rule-definition.md](./docs/design/rule-definition.md)     | `defineRule`, the rule shape, and `runRule` |
+| [configuration.md](./docs/design/configuration.md)         | `.vibator.json` fields and rule loading     |
+| [command-line.md](./docs/design/command-line.md)           | The command, its flags, and the subcommands |
 
 ## Skills
 
 The package ships three skills for Claude Code and compatible agents:
 
-- `configuring-vibator`: inspect a project and write or tune `.vibator.json`.
-- `writing-vibator-rules`: author a rule with `defineRule` and the namespace.
+- `writing-vibator-rules`: write a rule instead of a check script.
 - `fixing-vibator-findings`: read a report and resolve its findings.
+- `configuring-vibator`: set severities, options, extends, plugins, and excludes.
 
 ```sh
 npx vibator skills --install     # copy into .claude/skills/
 ```
 
-## Why
-
-Vibator started as a way to hold coding agents to a project's standards. Style
-guidance written in prompts and guides is not actionable: an agent drifts from
-it as its context grows. Vibator gives you a framework to encode such a standard
-as a deterministic check with a guideline attached, so when the check fails the
-standard reaches the agent.
-
-Vibator exposes a small surface for hooking in rules and leaves the rest of the
-machinery to the integrator. The engine loop is thin,
-`check → write → recheck → report`, and the only thing the framework imposes is
-the severity of a finding (`error`, `warn`, or `off`). T
-
-çthe `vibator` namespace provides common tooling for inspecting a project, parsing
-TypeScript and JavaScript, reading JSON and text, and reaching git and the
-shell, but it is the rule author who decides how and when to use it, whether a
-rule takes options, and whether a rule is fixable.
-
-You can rebuild a conventional linter, turn Vibator into an orchestrator of
-other linters and checkers, or write rules that span many files.
-
-Vibator reports in SARIF, so it drops into existing linting workflows.
-
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md). Participation is governed by the
 [Code of Conduct](./CODE_OF_CONDUCT.md). Commits follow Conventional Commits.
+[ACCESSIBILITY.md](./ACCESSIBILITY.md) says what the command line and the docs
+do for accessibility, and how to report a barrier.
 
 ## License
 

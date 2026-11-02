@@ -4,7 +4,7 @@
  *
  * @packageDocumentation
  */
-import { join, relative } from "node:path";
+import { join, relative, resolve } from "node:path";
 import { type Config, load } from "../configuration/index.ts";
 import { git } from "../namespace/git/index.ts";
 import { module } from "../namespace/module/index.ts";
@@ -15,7 +15,7 @@ import {
   setScope,
 } from "../namespace/runtime.ts";
 import type { AnyRule } from "../rules/define-rule.ts";
-import type { Diagnostic } from "../rules/index.ts";
+import type { Diagnostic, Report } from "../rules/index.ts";
 import type { Finding } from "./finding.ts";
 import { loadRules } from "./load-rules.ts";
 import { snippetAround } from "./snippet.ts";
@@ -83,7 +83,7 @@ export interface RunResult {
 interface Resolved {
   severity: "error" | "warn";
   options: unknown;
-  docs: string;
+  docs?: string;
 }
 
 /**
@@ -117,38 +117,66 @@ function resolveRule(rule: AnyRule, config: Config): Resolved | undefined {
   if (severity === "off") return undefined;
   const raw = (typeof entry === "object" ? entry.options : undefined) ?? {};
   const options = rule.options ? rule.options.parse(raw) : raw;
-  const docs =
-    (typeof entry === "object" ? entry.docs : undefined) ?? rule.docs;
-  return { severity, options, docs };
+  return { severity, options, docs: rule.docs };
 }
 
 /**
- * Turns a diagnostic into a finding, relativizing its file against the root.
+ * Relativizes an absolute path against the root, forward-slashed.
+ *
+ * @param root - The absolute project root.
+ * @param path - The absolute path.
+ * @returns The root-relative path.
+ */
+function fromRoot(root: string, path: string): string {
+  return relative(root, path).replaceAll("\\", "/");
+}
+
+/**
+ * Turns a diagnostic into a finding. It keeps only the diagnostic fields, so a
+ * rule can spread a richer value such as a text match into a diagnostic, and it
+ * relativizes the file and guideline against the root.
  *
  * @param ruleId - The id of the rule that produced the diagnostic.
  * @param severity - The resolved severity.
  * @param diagnostic - The diagnostic to convert.
  * @param root - The absolute project root.
- * @param docs - The absolute path of the rule's guideline.
- * @returns The finding.
+ * @param docs - The absolute path of the rule's guideline, when it has one.
+ * @returns The finding, without the fields that are undefined.
  */
 function toFinding(
   ruleId: string,
   severity: "error" | "warn",
   diagnostic: Diagnostic,
   root: string,
-  docs: string,
+  docs: string | undefined,
 ): Finding {
-  return {
-    ...diagnostic,
-    file: diagnostic.file
-      ? relative(root, diagnostic.file).replaceAll("\\", "/")
-      : undefined,
-    snippet: snippetFor(diagnostic.file, diagnostic.line, diagnostic.endLine),
+  const { file, line, endLine, column, message, expected, fix } = diagnostic;
+  const finding: Finding = {
     ruleId,
     severity,
-    docs,
+    file: file ? fromRoot(root, file) : undefined,
+    line,
+    endLine,
+    column,
+    message,
+    expected,
+    fix,
+    snippet: snippetFor(file, line, endLine),
+    docs: docs ? fromRoot(root, docs) : undefined,
   };
+  return Object.fromEntries(
+    Object.entries(finding).filter(([, value]) => value !== undefined),
+  ) as Finding;
+}
+
+/**
+ * The diagnostics of what a rule's check returned.
+ *
+ * @param result - A report, or the bare list of diagnostics.
+ * @returns The report.
+ */
+function asReport(result: Report | Diagnostic[]): Report {
+  return Array.isArray(result) ? { diagnostics: result } : result;
 }
 
 /**
@@ -189,12 +217,14 @@ async function runRule(
   root: string,
   write: boolean,
 ): Promise<Finding[]> {
-  let report = await rule.check(resolved.options);
+  let report = asReport(await rule.check(resolved.options));
   if (write && rule.fix) {
     await rule.fix(resolved.options, report);
-    report = await rule.check(resolved.options);
+    report = asReport(await rule.check(resolved.options));
   }
-  const guideline = module.resolve(resolved.docs, join(root, "package.json"));
+  const guideline = resolved.docs
+    ? module.resolve(resolved.docs, join(root, "package.json"))
+    : undefined;
   return report.diagnostics.map((diagnostic) =>
     toFinding(rule.id, resolved.severity, diagnostic, root, guideline),
   );
@@ -270,6 +300,34 @@ async function runRules(
 }
 
 /**
+ * Reports each rule id in the configuration that no loaded rule defines.
+ *
+ * @param rules - Every loaded rule.
+ * @param config - The loaded configuration.
+ * @param root - The absolute project root.
+ * @param configPath - The path of the configuration file.
+ * @returns One finding per unknown id.
+ */
+function unknownRuleIds(
+  rules: AnyRule[],
+  config: Config,
+  root: string,
+  configPath: string,
+): Finding[] {
+  const known = new Set(rules.map((rule) => rule.id));
+  return Object.keys(config.rules ?? {})
+    .filter((id) => !known.has(id))
+    .map((id) => ({
+      ruleId: "vibator",
+      severity: "error",
+      file: fromRoot(root, resolve(root, configPath)),
+      message: `No rule has the id "${id}".`,
+      expected: "Every key under rules names a loaded rule.",
+      fix: `Remove "${id}" from rules, or fix its spelling.`,
+    }));
+}
+
+/**
  * Runs every enabled rule, applies fixes under `write`, and collects findings.
  *
  * @remarks Sets the project root and scope on the namespace runtime, so the
@@ -283,10 +341,19 @@ export async function run(input: RunInput): Promise<RunResult> {
   setScope(scopeFor(input));
   const config = load(input.config);
   if (config.exclude) setExcludedDirectories(config.exclude);
-  const rules = (await loadRules(config)).filter(
+  const loaded = await loadRules(config);
+  const rules = loaded.filter(
     (rule) => !input.only || input.only.includes(rule.id),
   );
-  const findings = await runRules(rules, config, root, input);
+  const findings = [
+    ...unknownRuleIds(
+      loaded,
+      config,
+      root,
+      input.config ?? join(root, ".vibator.json"),
+    ),
+    ...(await runRules(rules, config, root, input)),
+  ];
   const exitCode = findings.some((finding) => finding.severity === "error")
     ? 1
     : 0;

@@ -84,6 +84,15 @@ export class FileSet {
     this.files = paths.map((path) => new File(path));
   }
 
+  /**
+   * Iterates the files in order, so a rule can loop with `for...of`.
+   *
+   * @returns An iterator over the files.
+   */
+  [Symbol.iterator](): Iterator<File> {
+    return this.files[Symbol.iterator]();
+  }
+
   /** The count of files in the set. */
   get length(): number {
     return this.files.length;
@@ -121,6 +130,16 @@ export class FileSet {
    */
   map<T>(transform: (file: File, index: number) => T): T[] {
     return this.files.map(transform);
+  }
+
+  /**
+   * Maps each file to a list of values and flattens the lists.
+   *
+   * @param transform - Called with each file and its index.
+   * @returns The concatenated values.
+   */
+  flatMap<T>(transform: (file: File, index: number) => T[]): T[] {
+    return this.files.flatMap(transform);
   }
 
   /**

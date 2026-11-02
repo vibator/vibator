@@ -29,6 +29,8 @@ interface RunOptions {
   changed?: boolean;
   /** Scopes the run to changes since a ref. */
   since?: string;
+  /** Draws the spinner while rules run. Defaults to `true`. */
+  progress?: boolean;
 }
 
 /** The reporters selectable with `--reporter`. */
@@ -61,7 +63,7 @@ async function runCommand(options: RunOptions): Promise<number> {
     staged: options.staged,
     changed: options.changed,
     since: options.since,
-    onProgress: spinner(),
+    onProgress: options.progress === false ? undefined : spinner(),
   });
   const reporter = reporters[options.reporter ?? "pretty"] ?? pretty;
   process.stdout.write(`${reporter(result.findings)}\n`);
@@ -75,7 +77,7 @@ function printUsage(): void {
       "       vibator <list|explain|init|skills>\n\n" +
       "Options: --write --only <ids> --config <path>\n" +
       "         --reporter <pretty|json|sarif> --staged --changed --since <ref>\n" +
-      "         --help --version\n",
+      "         --no-progress --help --version\n",
   );
 }
 
@@ -90,6 +92,7 @@ export async function main(argv: string[]): Promise<number> {
   const { values, positionals } = parseArgs({
     args: argv,
     allowPositionals: true,
+    allowNegative: true,
     options: {
       write: { type: "boolean" },
       only: { type: "string" },
@@ -98,6 +101,7 @@ export async function main(argv: string[]): Promise<number> {
       staged: { type: "boolean" },
       changed: { type: "boolean" },
       since: { type: "string" },
+      progress: { type: "boolean" },
       install: { type: "boolean" },
       help: { type: "boolean" },
       version: { type: "boolean" },
@@ -135,6 +139,7 @@ export async function main(argv: string[]): Promise<number> {
         staged: values.staged,
         changed: values.changed,
         since: values.since,
+        progress: values.progress,
       });
     default:
       process.stderr.write(`Unknown command: ${positionals[0]}\n`);

@@ -44,7 +44,7 @@ describe("run", () => {
         file: "src/a.ts",
         line: 2,
         message: "bad",
-        docs: join(dir, "demo.md"),
+        docs: "demo.md",
       },
     ]);
     expect(result.exitCode).toBe(1);
@@ -67,7 +67,66 @@ describe("run", () => {
     expect(result.findings[0]?.snippet).toBe(
       "  1 | const a = 1;\n> 2 | const b = 2;\n  3 | const c = 3;",
     );
-    expect(result.findings[0]?.docs).toBe(join(dir, "snip.md"));
+    expect(result.findings[0]?.docs).toBe("snip.md");
+  });
+
+  it("accepts a check that returns the diagnostics as an array", async () => {
+    defineRule({
+      id: "bare",
+      title: "Bare",
+      check: () => [{ message: "whole project" }],
+    });
+    const result = await run({ root: dir });
+    expect(result.findings).toEqual([
+      { ruleId: "bare", severity: "error", message: "whole project" },
+    ]);
+  });
+
+  it("keeps only the diagnostic fields of what a rule returns", async () => {
+    const hit = {
+      file: join(dir, "a.md"),
+      line: 1,
+      column: 3,
+      text: "x",
+      index: 2,
+      groups: [],
+    };
+    defineRule({
+      id: "spread",
+      title: "Spread",
+      check: () => [{ ...hit, message: "m", fix: "f" }],
+    });
+    const result = await run({ root: dir });
+    expect(result.findings).toEqual([
+      {
+        ruleId: "spread",
+        severity: "error",
+        file: "a.md",
+        line: 1,
+        column: 3,
+        message: "m",
+        fix: "f",
+      },
+    ]);
+  });
+
+  it("reports a rule id in .vibator.json that no rule defines", async () => {
+    writeFileSync(
+      join(dir, ".vibator.json"),
+      JSON.stringify({ rules: { "no-such-rule": "warn" } }),
+    );
+    const result = await run({ root: dir });
+    expect(result.findings).toEqual([
+      {
+        ruleId: "vibator",
+        severity: "error",
+        file: ".vibator.json",
+        message: 'No rule has the id "no-such-rule".',
+        expected: "Every key under rules names a loaded rule.",
+        fix: 'Remove "no-such-rule" from rules, or fix its spelling.',
+      },
+    ]);
+    expect(result.exitCode).toBe(1);
   });
 
   it("passes with only warnings", async () => {

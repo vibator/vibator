@@ -4,7 +4,7 @@
  *
  * @packageDocumentation
  */
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { discoverFiles } from "../discovery.ts";
 import { requireRoot } from "../runtime.ts";
@@ -36,6 +36,16 @@ export const project = {
   get folders(): FolderSet {
     const root = requireRoot();
     return new Folder(root, root, "", discoverFiles(root)).folders;
+  },
+
+  /**
+   * Reports whether a path exists on disk, whether or not discovery lists it.
+   *
+   * @param path - The absolute path to check.
+   * @returns Whether a file or folder exists at the path.
+   */
+  exists(path: string): boolean {
+    return existsSync(path);
   },
 
   /**

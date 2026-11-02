@@ -1,11 +1,11 @@
 ---
 name: fixing-vibator-findings
-description: "Resolve vibator findings: run the JSON reporter, act on each diagnostic's message, expected, and fix, read the guideline behind a rule with explain, and apply a fixable rule with --write. Use when a vibator run reports errors or warnings, or before declaring work done in a repo with a .vibator.json."
+description: "Resolve vibator findings: run the JSON reporter, act on each diagnostic's message, expected, and fix, read the guideline behind a rule with explain, and apply a fixable rule with --write. Use when a vibator run reports errors or warnings, or before declaring work done in a repo with a .vibator/ folder."
 ---
 
 # Fixing vibator findings
 
-Run the gate as JSON. The output is built to be acted on:
+Run vibator with the JSON reporter. The output is built to be acted on:
 
 ```sh
 npx vibator --reporter json
@@ -14,9 +14,9 @@ npx vibator --reporter json
 Each finding carries `ruleId` and `severity`, the location (`file`, `line`,
 `column`), and three fields with distinct jobs:
 
-- `message` — what is wrong. Read it to locate the problem.
-- `expected` — the standard, stated positively. This is the target state.
-- `fix` — the concrete next action. Act on this field.
+- `message`: what is wrong. Read it to locate the problem.
+- `expected`: the standard, stated positively. This is the target state.
+- `fix`: the concrete next action. Act on this field.
 
 ## The loop
 
@@ -37,7 +37,7 @@ Each finding carries `ruleId` and `severity`, the location (`file`, `line`,
 
 - Never edit `.vibator.json` to make a run pass. No severity downgrades, no new
   excludes, no `off`. The config is the project's standard; changing it is a
-  human decision, not a fix. This covers any config it extends.
+  human decision, not a fix.
 - Do not restate `message` as a code comment. Fix it.
 - Do not blanket-ignore. The escape hatch is for the case where the rule is
   wrong about one specific line:

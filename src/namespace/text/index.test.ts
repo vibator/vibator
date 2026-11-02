@@ -2,7 +2,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
-import { File } from "../project/index.ts";
+import { File, FileSet } from "../project/index.ts";
 import { text } from "./index.ts";
 
 const dir = mkdtempSync(join(tmpdir(), "vibator-text-"));
@@ -96,6 +96,45 @@ describe("text.matches", () => {
     expect(text.matches(fileOf("a\nfoo"), /foo/)).toEqual([
       { text: "foo", index: 2, line: 2, column: 1, groups: [] },
     ]);
+  });
+});
+
+describe("text.search", () => {
+  it("returns the matches of every file, each with its file path", () => {
+    const first = fileOf("a foo");
+    const second = fileOf("foo\nfoo");
+    const files = new FileSet(dir, [first.path, second.path]);
+    expect(text.search(files, /foo/)).toEqual([
+      {
+        file: first.path,
+        text: "foo",
+        index: 2,
+        line: 1,
+        column: 3,
+        groups: [],
+      },
+      {
+        file: second.path,
+        text: "foo",
+        index: 0,
+        line: 1,
+        column: 1,
+        groups: [],
+      },
+      {
+        file: second.path,
+        text: "foo",
+        index: 4,
+        line: 2,
+        column: 1,
+        groups: [],
+      },
+    ]);
+  });
+
+  it("returns nothing when no file matches", () => {
+    const files = new FileSet(dir, [fileOf("bar").path]);
+    expect(text.search(files, /foo/)).toEqual([]);
   });
 });
 

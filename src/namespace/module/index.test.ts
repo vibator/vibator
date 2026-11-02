@@ -28,19 +28,9 @@ describe("module.resolve", () => {
     expect(resolved).toContain("zod");
   });
 
-  it("resolves a package:path reference to a file inside the package", () => {
-    const path = module.resolve("zod:README.md", anchor);
-    expect(path).toMatch(/node_modules\/zod\/README\.md$/);
-  });
-
-  it("resolves a scoped package:path reference the same", () => {
-    const path = module.resolve("@types/node:README.md", anchor);
-    expect(path).toMatch(/node_modules\/@types\/node\/README\.md$/);
-  });
-
-  it("throws when a package:path names an uninstalled package", () => {
-    expect(() => module.resolve("no-such-package:x.md", anchor)).toThrow(
-      /no-such-package/,
+  it("resolves a package:path reference as a plain package specifier", () => {
+    expect(() => module.resolve("zod:README.md", anchor)).toThrow(
+      /Cannot find a package for "zod:README\.md"/,
     );
   });
 

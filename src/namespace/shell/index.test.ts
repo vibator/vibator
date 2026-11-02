@@ -23,6 +23,11 @@ describe("shell.run", () => {
     expect(result.code).toBe(0);
   });
 
+  it("runs from the root when no options are given", () => {
+    const result = shell.run("ls");
+    expect(result.stdout).toContain("sub");
+  });
+
   it("reports a failing command with its exit code", () => {
     const result = shell.run("exit 3", {});
     expect(result.ok).toBe(false);

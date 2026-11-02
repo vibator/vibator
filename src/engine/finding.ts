@@ -15,6 +15,6 @@ export interface Finding extends Diagnostic {
   severity: "error" | "warn";
   /** The source excerpt around the finding, rendered by the framework. */
   snippet?: string;
-  /** The absolute path of the rule's guideline. */
+  /** The path of the rule's guideline, relative to the project root. */
   docs?: string;
 }

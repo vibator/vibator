@@ -9,23 +9,27 @@ listed there bind all contributions. Participation is governed by the
 
 ```sh
 npm install
-npm run verify    # the whole gate: lint, arch, knip, build, test
+npm run verify    # the whole gate: lint, docs, arch, knip, build, package, self, test
 ```
 
 `verify` runs the whole gate:
 
-| Step            | Tool                         | Checks                                          |
-|-----------------|------------------------------|-------------------------------------------------|
-| `npm run lint`  | Biome (strict, `biome.json`) | Formatting, lint rules, complexity limits       |
-| `npm run arch`  | dependency-cruiser           | Layer boundaries, cycles, dynamic `typescript`  |
-| `npm run knip`  | knip                         | Dead code, unused exports and dependencies      |
-| `npm run build` | tsc + generate               | Type errors, stale `schema.json`                |
-| `npm run test`  | vitest                       | Unit tests, with coverage                       |
+| Step                 | Tool                         | Checks                                                      |
+| -------------------- | ---------------------------- | ----------------------------------------------------------- |
+| `npm run lint`       | Biome (strict, `biome.json`) | Formatting, lint rules, complexity limits                   |
+| `npm run docs:check` | remark (`.remarkrc.mjs`)     | Markdown links and headings                                 |
+| `npm run arch`       | dependency-cruiser           | Layer boundaries, cycles, dynamic `typescript`              |
+| `npm run knip`       | knip                         | Dead code, unused exports and dependencies                  |
+| `npm run build`      | tsc + generate               | Type errors, stale `schema.json`                            |
+| `npm run package`    | publint + attw               | The packed package and its type entry points                |
+| `npm run self`       | vibator                      | The rules in `.vibator/`: Markdown format and accessibility |
+| `npm run test`       | vitest                       | Unit tests, with coverage                                   |
 
 Requirements: Node 24 or later (see `.nvmrc`). Any package manager works, but
 CI and the lockfile use npm. Node runs the TypeScript source directly through
 type stripping, so there is no build step while developing. `npm run format`
-applies Biome's formatting.
+applies Biome's formatting. `npm run docs:format` formats the Markdown, as does
+`npx vibator --only markdown-formatted --write` after a build.
 
 `schema.json` is generated from the configuration schema by the build. Commit
 the regenerated file when you change the configuration schema. CI fails when it

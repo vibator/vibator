@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     environment: "node",
     globals: true,
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.test.ts", ".vibator/**/*.test.ts"],
     exclude: ["**/node_modules/**", "backup/**"],
     coverage: {
       provider: "v8",

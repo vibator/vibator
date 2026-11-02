@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  */
-import type { File } from "../project/index.ts";
+import type { File, FileSet } from "../project/index.ts";
 
 /**
  * One line of text with its number.
@@ -39,6 +39,14 @@ export interface Match {
   readonly column: number;
   /** The captured groups. */
   readonly groups: string[];
+}
+
+/**
+ * One match of a pattern in a file of a set, with the file's path.
+ */
+export interface Hit extends Match {
+  /** The absolute path of the file the match is in. */
+  readonly file: string;
 }
 
 /**
@@ -123,6 +131,22 @@ export const text = {
    */
   positionAt(file: File, offset: number): Position {
     return resolvePosition(file.content, offset);
+  },
+
+  /**
+   * Returns every match of a pattern across a set of files, each with the
+   * path of its file. A hit spreads into a diagnostic as it is.
+   *
+   * @param files - The files to search.
+   * @param pattern - The pattern to match.
+   * @returns Every match, in file order.
+   */
+  search(files: FileSet, pattern: RegExp): Hit[] {
+    return files.flatMap((file) =>
+      text
+        .matches(file, pattern)
+        .map((match) => ({ file: file.path, ...match })),
+    );
   },
 
   /**

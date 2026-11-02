@@ -79,18 +79,22 @@ export function spawnWorker(fd = 2): Worker {
 
 /**
  * Creates a progress listener that draws a spinner with the running rule on
- * a stream, and draws nothing when the stream is not a terminal.
+ * a stream. It draws nothing when the stream is not a terminal or the
+ * terminal sets `TERM=dumb`, as screen readers and simple terminals do.
  *
  * @param stream - The stream to draw on. Defaults to standard error.
  * @param spawn - Starts the drawing thread. Defaults to a worker on
  * standard error.
+ * @param env - The environment to read `TERM` from. Defaults to the process
+ * environment.
  * @returns The listener to pass as `onProgress`.
  */
 export function spinner(
   stream: NodeJS.WriteStream = process.stderr,
   spawn: () => SpinnerPort = spawnWorker,
+  env: NodeJS.ProcessEnv = process.env,
 ): (event: ProgressEvent) => void {
-  if (!stream.isTTY) return () => undefined;
+  if (!stream.isTTY || env.TERM === "dumb") return () => undefined;
   let port: SpinnerPort | undefined;
   return (event) => {
     port ??= spawn();
