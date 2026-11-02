@@ -1,6 +1,6 @@
 {
   "name": "vibator",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "description": "Project rules instead of check scripts: a small framework for the checks your linters do not cover.",
   "type": "module",
   "license": "MIT",
