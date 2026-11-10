@@ -67,6 +67,42 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: davelosert/vitest-coverage-report-action@8f86cfb56ed6d5613ea8cdc5259f207fbfd51ece # v2
 
+  bun:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: "1.4.2"
+
+      - name: Install dependencies
+        env:
+          CI: true
+          HUSKY: "0"
+        run: |
+          bun install
+
+      - name: Build (tsc + generated schema)
+        run: |
+          bun --bun run build
+
+      - name: Run unit tests on Bun (coverage stays on the Node job)
+        run: |
+          bun --bun vitest run
+
+      - name: Vibator on its own source
+        run: |
+          bun --bun dist/cli.js
+
   commitlint:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest

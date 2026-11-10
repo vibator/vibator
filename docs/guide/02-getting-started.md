@@ -2,12 +2,25 @@
 
 ## Install
 
-Install vibator as a dev dependency. It requires Node 24 or later.
+Install vibator as a dev dependency. It requires Node 24 or later, or Bun 1.4.2
+or later.
 
 ```sh
 npm install --save-dev vibator
 npx vibator init
 ```
+
+With Bun:
+
+```sh
+bun add -d vibator
+bunx --bun vibator init
+bunx --bun vibator
+```
+
+`--bun` runs the binary on Bun. The binary has a `#!/usr/bin/env node` shebang,
+so without the flag `bunx vibator` runs on Node whenever Node is installed. The
+`npx vibator` commands in these guides become `bunx --bun vibator`.
 
 `init` writes a starter rule, `.vibator/no-conflict-markers.ts`. It reports
 lines left over from a merge conflict.

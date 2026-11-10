@@ -13,6 +13,7 @@ utilities through the [`vibator` namespace](./vibator-namespace.md).
 - [Diagnostic](#diagnostic): One finding in a report.
 - [Severity](#severity): The importance of a finding.
 - [runRule](#runrule): Run a rule in a test.
+- [Syntax](#syntax): The TypeScript a rule module can use.
 
 ---
 
@@ -99,6 +100,20 @@ Run one rule against a temporary project in a test. Import it from
 | ------------------------------- | -------------------------------------------------------------- |
 | files?: Record\<string, string> | The content of each project file, keyed by root-relative path. |
 | options?: object                | The rule options, as `.vibator.json` passes them.              |
+
+## Syntax
+
+The TypeScript a rule module can use. The framework loads each rule module with
+a plain `import()`, so the runtime compiles it.
+
+| Runtime | Accepts                                                                 |
+| ------- | ----------------------------------------------------------------------- |
+| Node 24 | Erasable syntax only. Enums, parameter properties, and namespaces fail. |
+| Bun     | Any TypeScript.                                                         |
+
+A rule that loads on Bun can fail on Node. Write rules with erasable syntax so
+they run on both. TypeScript 5.8 and later check this with `erasableSyntaxOnly`
+in the `tsconfig` that covers the rules.
 
 ---
 

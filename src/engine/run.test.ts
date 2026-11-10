@@ -1,5 +1,11 @@
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -191,6 +197,36 @@ describe("run", () => {
     });
     expect((await run({ root: dir })).findings).toHaveLength(1);
     expect((await run({ root: dir, write: true })).findings).toHaveLength(0);
+  });
+
+  it("loads a rule module whose fix writes a file, then rechecks the file", async () => {
+    const index = JSON.stringify(join(import.meta.dirname, "../index.ts"));
+    mkdirSync(join(dir, ".vibator"));
+    writeFileSync(
+      join(dir, ".vibator", "no-todo.ts"),
+      `import { defineRule, vibator } from ${index};
+const files = () => vibator.project.files.match(["*.txt"]);
+export default defineRule({
+  id: "no-todo",
+  title: "No TODO",
+  docs: "./n.md",
+  check: () =>
+    vibator.text.search(files(), /TODO/).map((hit) => ({ ...hit, message: "TODO" })),
+  fix: () => {
+    for (const file of files()) {
+      vibator.project.write(file.path, readText(file).replaceAll("TODO", "DONE"));
+    }
+  },
+});
+function readText(file: { path: string }): string {
+  return vibator.text.lines(file as never).map((line) => line.text).join("\\n");
+}
+`,
+    );
+    writeFileSync(join(dir, "notes.txt"), "a TODO\nb");
+    expect((await run({ root: dir })).findings).toHaveLength(1);
+    expect((await run({ root: dir, write: true })).findings).toHaveLength(0);
+    expect(readFileSync(join(dir, "notes.txt"), "utf8")).toBe("a DONE\nb");
   });
 
   it("reports a crashed rule as an error", async () => {

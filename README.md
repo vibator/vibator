@@ -58,7 +58,18 @@ npx vibator init     # writes a starter rule into .vibator/
 npx vibator
 ```
 
-vibator requires Node 24 or later.
+With Bun:
+
+```sh
+bun add -d vibator
+bunx --bun vibator init
+bunx --bun vibator
+```
+
+`--bun` runs the binary on Bun. The binary has a `#!/usr/bin/env node` shebang,
+so without the flag `bunx vibator` runs on Node whenever Node is installed.
+
+vibator requires Node 24 or later, or Bun 1.4.2 or later.
 
 ## Test a rule
 
